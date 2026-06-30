@@ -149,6 +149,8 @@ class SupabaseDatabase {
   }
 
   async updateFixture(id: string, updates: Partial<Fixture>): Promise<Fixture | undefined> {
+    console.log('updateFixture called with:', { id, updates });
+
     const updateData: any = {};
     if (updates.teamA !== undefined) updateData.team_a = updates.teamA;
     if (updates.teamB !== undefined) updateData.team_b = updates.teamB;
@@ -165,6 +167,9 @@ class SupabaseDatabase {
     if (updates.enableMatchOutcome !== undefined) updateData.enable_match_outcome = updates.enableMatchOutcome;
     if (updates.enableScorePrediction !== undefined) updateData.enable_score_prediction = updates.enableScorePrediction;
     if (updates.enableScorerPrediction !== undefined) updateData.enable_scorer_prediction = updates.enableScorerPrediction;
+    if (updates.externalId !== undefined) updateData.external_id = updates.externalId || null;
+
+    console.log('Supabase update data:', updateData);
 
     const { data, error } = await supabase
       .from('fixtures')
@@ -173,7 +178,17 @@ class SupabaseDatabase {
       .select()
       .single();
 
-    if (error || !data) return undefined;
+    console.log('Supabase update response:', { data, error });
+
+    if (error) {
+      console.error('Supabase update error:', error);
+      throw new Error(`Failed to update fixture: ${error.message}`);
+    }
+
+    if (!data) {
+      console.error('No data returned from update');
+      return undefined;
+    }
 
     return this.mapFixture(data);
   }
