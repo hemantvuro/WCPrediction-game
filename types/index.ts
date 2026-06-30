@@ -34,6 +34,7 @@ export interface Fixture {
   scoreA?: number;
   scoreB?: number;
   goalScorers?: string[];
+  externalId?: string; // API-Football fixture ID for fetching goal scorers
   enableMatchOutcome?: boolean;
   enableScorePrediction?: boolean;
   enableScorerPrediction?: boolean;
