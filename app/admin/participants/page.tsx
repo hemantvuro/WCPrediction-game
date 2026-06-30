@@ -229,26 +229,13 @@ export default function ParticipantsManagement() {
             <h1 className="text-3xl font-bold text-white">Participants Management</h1>
             <div className="flex gap-3">
               <button
-                onClick={() => setShowBatchAddModal(true)}
-                className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition font-semibold shadow-sm"
-              >
-                📋 Batch Add (13)
-              </button>
-              <button
                 onClick={() => {
                   setShowAddModal(true);
                   setFormData({ firstName: '', phoneNumber: '', points: '' });
                 }}
                 className="px-4 py-2 bg-white text-blue-600 rounded-lg hover:bg-blue-50 transition font-semibold shadow-sm"
               >
-                ➕ Add Single
-              </button>
-              <button
-                onClick={handleBulkDelete}
-                disabled={users.length === 0}
-                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition font-semibold shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                🗑️ Delete All
+                ➕ Add Participant
               </button>
               <a
                 href="/"
