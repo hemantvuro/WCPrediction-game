@@ -7,6 +7,7 @@ export default function ParticipantsManagement() {
   const [users, setUsers] = useState<User[]>([]);
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [showBatchAddModal, setShowBatchAddModal] = useState(false);
   const [formData, setFormData] = useState({ firstName: '', phoneNumber: '', points: '' });
 
   useEffect(() => {
@@ -109,6 +110,92 @@ export default function ParticipantsManagement() {
     }
   };
 
+  const handleBulkDelete = async () => {
+    if (!confirm(`⚠️ DELETE ALL ${users.length} PARTICIPANTS?\n\nThis will:\n- Remove all users\n- Delete all predictions\n- Clear the entire leaderboard\n\nThis action CANNOT be undone!`)) return;
+
+    if (!confirm('⚠️ FINAL WARNING: Are you ABSOLUTELY sure?\n\nType your confirmation in the console if needed.')) return;
+
+    try {
+      const deletePromises = users.map(user =>
+        fetch(`/api/users/${user.id}`, { method: 'DELETE' })
+      );
+
+      await Promise.all(deletePromises);
+      alert(`✅ Successfully deleted all ${users.length} participants`);
+      loadUsers();
+    } catch (error) {
+      console.error('Failed to bulk delete:', error);
+      alert('❌ Failed to delete all participants');
+    }
+  };
+
+  const handleBatchAdd = async () => {
+    const participants = [
+      { firstName: 'Vidhi', points: 97 },
+      { firstName: 'Pritesh', points: 92 },
+      { firstName: 'Shweta', points: 92 },
+      { firstName: 'Germanjit', points: 85 },
+      { firstName: 'Nirjhar', points: 78 },
+      { firstName: 'Hemant', points: 76 },
+      { firstName: 'Pushkin', points: 76 },
+      { firstName: 'Sandeep', points: 70 },
+      { firstName: 'Happy', points: 67 },
+      { firstName: 'Aditi', points: 61 },
+      { firstName: 'Anurag', points: 50 },
+      { firstName: 'Majji', points: 48 },
+      { firstName: 'Deepshikha', points: 38 },
+    ];
+
+    if (!confirm(`Add ${participants.length} participants with preset points?\n\n${participants.map(p => `${p.firstName} - ${p.points}`).join('\n')}`)) return;
+
+    try {
+      let successCount = 0;
+      let errorCount = 0;
+
+      for (const p of participants) {
+        try {
+          const response = await fetch('/api/users', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              firstName: p.firstName,
+              phoneNumber: `temp_${p.firstName.toLowerCase()}_${Date.now()}`,
+            }),
+          });
+
+          if (response.ok) {
+            const newUser = await response.json();
+
+            // Set points
+            await fetch(`/api/users/${newUser.id}`, {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                firstName: p.firstName,
+                phoneNumber: newUser.phoneNumber,
+                points: p.points,
+              }),
+            });
+
+            successCount++;
+          } else {
+            errorCount++;
+          }
+        } catch (error) {
+          console.error(`Failed to add ${p.firstName}:`, error);
+          errorCount++;
+        }
+      }
+
+      alert(`✅ Batch add complete!\n\nSuccess: ${successCount}\nFailed: ${errorCount}`);
+      setShowBatchAddModal(false);
+      loadUsers();
+    } catch (error) {
+      console.error('Batch add failed:', error);
+      alert('❌ Failed to add participants in batch');
+    }
+  };
+
   const startEdit = (user: User) => {
     setEditingUser(user);
     setFormData({
@@ -126,13 +213,26 @@ export default function ParticipantsManagement() {
             <h1 className="text-3xl font-bold text-white">Participants Management</h1>
             <div className="flex gap-3">
               <button
+                onClick={() => setShowBatchAddModal(true)}
+                className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition font-semibold shadow-sm"
+              >
+                📋 Batch Add (13)
+              </button>
+              <button
                 onClick={() => {
                   setShowAddModal(true);
                   setFormData({ firstName: '', phoneNumber: '', points: '' });
                 }}
                 className="px-4 py-2 bg-white text-blue-600 rounded-lg hover:bg-blue-50 transition font-semibold shadow-sm"
               >
-                ➕ Add Participant
+                ➕ Add Single
+              </button>
+              <button
+                onClick={handleBulkDelete}
+                disabled={users.length === 0}
+                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition font-semibold shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                🗑️ Delete All
               </button>
               <a
                 href="/"
@@ -146,6 +246,64 @@ export default function ParticipantsManagement() {
       </header>
 
       <div className="max-w-7xl mx-auto px-4 py-6">
+        {/* Batch Add Confirmation Modal */}
+        {showBatchAddModal && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-lg shadow-2xl max-w-2xl w-full p-6 max-h-[90vh] overflow-y-auto">
+              <h2 className="text-2xl font-bold mb-4 text-gray-800">📋 Batch Add 13 Participants</h2>
+              <div className="bg-blue-50 border-l-4 border-blue-500 p-4 mb-4">
+                <p className="text-sm text-blue-800 font-semibold">
+                  ℹ️ Each participant will be created with a temporary phone number (temp_firstname_timestamp).
+                </p>
+                <p className="text-sm text-blue-700 mt-2">
+                  When they log in with their real phone number, the system will match by name (case-insensitive) and replace the temp number.
+                </p>
+              </div>
+              <div className="space-y-2 bg-gray-50 p-4 rounded-lg max-h-96 overflow-y-auto">
+                <h3 className="font-bold text-gray-700 mb-2">Participants to be added:</h3>
+                <div className="grid grid-cols-2 gap-2 text-sm">
+                  {[
+                    { name: 'Vidhi', points: 97 },
+                    { name: 'Pritesh', points: 92 },
+                    { name: 'Shweta', points: 92 },
+                    { name: 'Germanjit', points: 85 },
+                    { name: 'Nirjhar', points: 78 },
+                    { name: 'Hemant', points: 76 },
+                    { name: 'Pushkin', points: 76 },
+                    { name: 'Sandeep', points: 70 },
+                    { name: 'Happy', points: 67 },
+                    { name: 'Aditi', points: 61 },
+                    { name: 'Anurag', points: 50 },
+                    { name: 'Majji', points: 48 },
+                    { name: 'Deepshikha', points: 38 },
+                  ].map((p, idx) => (
+                    <div key={idx} className="flex justify-between bg-white p-2 rounded border">
+                      <span className="font-semibold text-gray-700">{p.name}</span>
+                      <span className="text-yellow-600 font-bold">{p.points} pts</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div className="flex gap-3 pt-4">
+                <button
+                  type="button"
+                  onClick={() => setShowBatchAddModal(false)}
+                  className="flex-1 px-6 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition font-semibold"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={handleBatchAdd}
+                  className="flex-1 px-6 py-2 fifa-gradient text-white rounded-lg hover:opacity-90 transition font-semibold"
+                >
+                  ✅ Add All 13 Participants
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Add Participant Modal */}
         {showAddModal && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">

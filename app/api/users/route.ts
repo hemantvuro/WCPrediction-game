@@ -13,10 +13,28 @@ export async function POST(request: Request) {
       );
     }
 
-    // Check if user already exists
-    const existingUser = await db.getUserByPhone(phoneNumber);
-    if (existingUser) {
-      return NextResponse.json(existingUser);
+    // Check if user already exists by phone number
+    const existingUserByPhone = await db.getUserByPhone(phoneNumber);
+    if (existingUserByPhone) {
+      return NextResponse.json(existingUserByPhone);
+    }
+
+    // Check if a user with the same first name exists (case-insensitive)
+    // This handles the case where admin created a temp user and real user is logging in
+    const allUsers = await db.getAllUsers();
+    const existingUserByName = allUsers.find(
+      (u) => u.firstName.toLowerCase() === firstName.toLowerCase()
+    );
+
+    if (existingUserByName && existingUserByName.phoneNumber.startsWith('temp_')) {
+      // User exists with temp phone number - update with real phone number
+      console.log(`Matching existing user by name: ${existingUserByName.firstName}, updating phone number`);
+
+      const updatedUser = await db.updateUser(existingUserByName.id, {
+        phoneNumber,
+      });
+
+      return NextResponse.json(updatedUser, { status: 200 });
     }
 
     // Grant admin rights to Hemant
