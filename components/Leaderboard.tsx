@@ -6,9 +6,11 @@ import { ArrowUp, ArrowDown, Minus } from 'lucide-react';
 interface LeaderboardProps {
   entries: LeaderboardEntry[];
   onExport?: () => void;
+  onRefresh?: () => void;
+  lastUpdated?: Date;
 }
 
-export default function Leaderboard({ entries, onExport }: LeaderboardProps) {
+export default function Leaderboard({ entries, onExport, onRefresh, lastUpdated }: LeaderboardProps) {
   const getMovementIcon = (entry: LeaderboardEntry) => {
     if (!entry.previousRank) {
       return <Minus className="w-4 h-4 text-gray-400" />;
@@ -42,15 +44,32 @@ export default function Leaderboard({ entries, onExport }: LeaderboardProps) {
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold text-gray-800">🏆 Leaderboard</h2>
-        {onExport && (
-          <button
-            onClick={onExport}
-            className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-sm font-medium"
-          >
-            Export for WhatsApp
-          </button>
-        )}
+        <div>
+          <h2 className="text-2xl font-bold text-gray-800">🏆 Leaderboard</h2>
+          {lastUpdated && (
+            <p className="text-xs text-gray-500 mt-1">
+              Last updated: {lastUpdated.toLocaleTimeString()}
+            </p>
+          )}
+        </div>
+        <div className="flex gap-2">
+          {onRefresh && (
+            <button
+              onClick={onRefresh}
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm font-medium"
+            >
+              🔄 Refresh
+            </button>
+          )}
+          {onExport && (
+            <button
+              onClick={onExport}
+              className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-sm font-medium"
+            >
+              📋 Export
+            </button>
+          )}
+        </div>
       </div>
 
       <div className="space-y-2">

@@ -20,6 +20,7 @@ export default function Home() {
   const [openExpanded, setOpenExpanded] = useState(true);
   const [lockedExpanded, setLockedExpanded] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [leaderboardLastUpdated, setLeaderboardLastUpdated] = useState<Date | null>(null);
 
   useEffect(() => {
     const savedUserId = localStorage.getItem('userId');
@@ -56,6 +57,13 @@ export default function Home() {
       setIsLoading(false);
     }
   }, []);
+
+  // Auto-refresh leaderboard when switching to leaderboard tab
+  useEffect(() => {
+    if (activeTab === 'leaderboard' && currentUser) {
+      loadLeaderboard();
+    }
+  }, [activeTab]);
 
   const loadUserData = async (userId: string) => {
     try {
@@ -228,6 +236,23 @@ export default function Home() {
 
     navigator.clipboard.writeText(fullText);
     alert('Leaderboard copied to clipboard!');
+  };
+
+  const loadLeaderboard = async () => {
+    try {
+      const leaderboardRes = await fetch('/api/leaderboard');
+      const leaderboardData = await leaderboardRes.json();
+      setLeaderboard(leaderboardData);
+      setLeaderboardLastUpdated(new Date());
+      console.log('✅ Leaderboard refreshed:', leaderboardData.length, 'entries');
+    } catch (error) {
+      console.error('Failed to load leaderboard:', error);
+    }
+  };
+
+  const handleLeaderboardRefresh = async () => {
+    console.log('🔄 Manually refreshing leaderboard...');
+    await loadLeaderboard();
   };
 
   const handleRefresh = async () => {
@@ -447,16 +472,18 @@ export default function Home() {
         {activeTab === 'leaderboard' && (
           <>
             {isAdmin && (
-              <div className="mb-4 flex justify-end">
-                <button
-                  onClick={copyLeaderboard}
-                  className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-semibold shadow-lg"
-                >
-                  📋 Copy Leaderboard
-                </button>
+              <div className="mb-4 p-4 bg-blue-50 border-l-4 border-blue-500 rounded">
+                <p className="text-sm text-blue-800">
+                  ℹ️ <strong>Admin Note:</strong> Changes in "Manage Participants" are reflected here automatically.
+                  Click "🔄 Refresh" below if needed.
+                </p>
               </div>
             )}
-            <Leaderboard entries={leaderboard} />
+            <Leaderboard
+              entries={leaderboard}
+              onRefresh={handleLeaderboardRefresh}
+              lastUpdated={leaderboardLastUpdated || undefined}
+            />
           </>
         )}
 

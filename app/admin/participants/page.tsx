@@ -100,7 +100,7 @@ export default function ParticipantsManagement() {
       });
 
       if (response.ok) {
-        alert('✅ Participant updated successfully');
+        alert('✅ Participant updated successfully!\n\n💡 Changes will be reflected in the Leaderboard.');
         setEditingUser(null);
         setFormData({ firstName: '', phoneNumber: '', points: '' });
         loadUsers();
@@ -203,7 +203,7 @@ export default function ParticipantsManagement() {
         }
       }
 
-      alert(`✅ Batch add complete!\n\nSuccess: ${successCount}\nFailed: ${errorCount}`);
+      alert(`✅ Batch add complete!\n\nSuccess: ${successCount}\nFailed: ${errorCount}\n\n💡 Go to the Leaderboard tab to see all participants with their points!`);
       setShowBatchAddModal(false);
       loadUsers();
     } catch (error) {
