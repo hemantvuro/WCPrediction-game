@@ -556,15 +556,14 @@ class SupabaseDatabase {
         totalPoints += points;
       });
 
-      // Add manual points adjustment from admin
-      if (user.points) {
-        totalPoints += user.points;
-      }
+      // If admin has set manual points, use ONLY those (override calculated points)
+      // Otherwise use the calculated points from predictions
+      const finalPoints = user.points !== undefined && user.points !== 0 ? user.points : totalPoints;
 
       return {
         userId: user.id,
         userName: user.firstName,
-        totalPoints,
+        totalPoints: finalPoints,
         correctPredictions,
         exactScores,
         rank: 0,
