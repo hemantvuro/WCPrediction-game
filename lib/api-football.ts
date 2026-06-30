@@ -3,6 +3,9 @@
 // Sign up: https://rapidapi.com/api-sports/api/api-football
 
 const RAPIDAPI_KEY = process.env.RAPIDAPI_KEY || process.env.NEXT_PUBLIC_RAPIDAPI_KEY || '';
+
+// Allow build to succeed without API key (will be available at runtime)
+const isValidKey = RAPIDAPI_KEY && RAPIDAPI_KEY !== 'your_rapidapi_key_here';
 const BASE_URL = 'https://v3.football.api-sports.io';
 
 interface ApiFootballGoal {
@@ -144,11 +147,11 @@ export async function fetchMatchDetails(fixtureId: string): Promise<{
     away: string[];
   };
 }> {
-  if (!RAPIDAPI_KEY) {
+  if (!isValidKey || !RAPIDAPI_KEY) {
     throw new Error(
       'API-Football key not configured.\n' +
       'Sign up at: https://rapidapi.com/api-sports/api/api-football\n' +
-      'Add RAPIDAPI_KEY to .env.local'
+      'Add RAPIDAPI_KEY to Vercel environment variables'
     );
   }
 
@@ -228,7 +231,7 @@ export async function searchFixture(
   awayTeam: string,
   date: Date
 ): Promise<string | null> {
-  if (!RAPIDAPI_KEY) {
+  if (!isValidKey || !RAPIDAPI_KEY) {
     throw new Error('API-Football key not configured');
   }
 
