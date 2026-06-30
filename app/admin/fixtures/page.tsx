@@ -373,40 +373,44 @@ function FixtureForm({
   onSave: (fixture: any) => void;
   onCancel: () => void;
 }) {
-  const [formData, setFormData] = useState({
-    teamAId: '',
-    teamBId: '',
-    teamA: fixture?.teamA || '',
-    teamB: fixture?.teamB || '',
-    teamAFlag: fixture?.teamAFlag || '',
-    teamBFlag: fixture?.teamBFlag || '',
-    matchDate: fixture?.matchDate
-      ? new Date(fixture.matchDate).toISOString().slice(0, 16)
-      : '',
-    status: fixture?.status === 'completed' ? 'completed' : (fixture?.status || 'locked'),
-    result: fixture?.result || undefined,
-    scoreA: fixture?.scoreA?.toString() || '',
-    scoreB: fixture?.scoreB?.toString() || '',
-    goalScorers: fixture?.goalScorers?.join(', ') || '',
-    enableMatchOutcome: true, // Always enabled
-    enableScorePrediction: fixture?.enableScorePrediction !== false,
-    enableScorerPrediction: fixture?.enableScorerPrediction !== false,
-  });
+  // Initialize form data, computing team IDs immediately if teams are available
+  const getInitialFormData = () => {
+    const teamAId = fixture && teams.length > 0
+      ? teams.find(t => t.name === fixture.teamA)?.id || ''
+      : '';
+    const teamBId = fixture && teams.length > 0
+      ? teams.find(t => t.name === fixture.teamB)?.id || ''
+      : '';
 
-  // Update team IDs when teams load or fixture changes
+    return {
+      teamAId,
+      teamBId,
+      teamA: fixture?.teamA || '',
+      teamB: fixture?.teamB || '',
+      teamAFlag: fixture?.teamAFlag || '',
+      teamBFlag: fixture?.teamBFlag || '',
+      matchDate: fixture?.matchDate
+        ? new Date(fixture.matchDate).toISOString().slice(0, 16)
+        : '',
+      status: fixture?.status === 'completed' ? 'completed' : (fixture?.status || 'locked'),
+      result: fixture?.result || undefined,
+      scoreA: fixture?.scoreA?.toString() || '',
+      scoreB: fixture?.scoreB?.toString() || '',
+      goalScorers: fixture?.goalScorers?.join(', ') || '',
+      enableMatchOutcome: true, // Always enabled
+      enableScorePrediction: fixture?.enableScorePrediction !== false,
+      enableScorerPrediction: fixture?.enableScorerPrediction !== false,
+    };
+  };
+
+  const [formData, setFormData] = useState(getInitialFormData());
+
+  // Update entire form when fixture or teams change
   useEffect(() => {
-    if (fixture && teams.length > 0) {
-      const teamAId = teams.find(t => t.name === fixture.teamA)?.id || '';
-      const teamBId = teams.find(t => t.name === fixture.teamB)?.id || '';
-
-      if (teamAId || teamBId) {
-        setFormData(prev => ({
-          ...prev,
-          teamAId,
-          teamBId,
-        }));
-      }
+    if (teams.length > 0) {
+      setFormData(getInitialFormData());
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fixture, teams]);
 
   const [isFetchingScorers, setIsFetchingScorers] = useState(false);
