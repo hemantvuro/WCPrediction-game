@@ -8,6 +8,7 @@ export default function ParticipantsManagement() {
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showBatchAddModal, setShowBatchAddModal] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [formData, setFormData] = useState({ firstName: '', phoneNumber: '', points: '' });
 
   useEffect(() => {
@@ -16,11 +17,26 @@ export default function ParticipantsManagement() {
 
   const loadUsers = async () => {
     try {
+      setIsLoading(true);
+      console.log('Loading users from /api/users...');
       const response = await fetch('/api/users');
+      console.log('Response status:', response.status);
+
+      if (!response.ok) {
+        console.error('Failed to fetch users:', response.statusText);
+        alert(`❌ Failed to load users: ${response.statusText}`);
+        return;
+      }
+
       const data = await response.json();
+      console.log('Loaded users:', data);
+      console.log('User count:', data.length);
       setUsers(data);
     } catch (error) {
       console.error('Failed to load users:', error);
+      alert(`❌ Error loading users: ${error}`);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -437,11 +453,25 @@ export default function ParticipantsManagement() {
         )}
 
         <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-xl font-bold text-gray-800 mb-4">
-            All Participants ({users.length})
-          </h2>
-          <div className="space-y-3">
-            {users.map((user) => (
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-bold text-gray-800">
+              All Participants ({users.length})
+            </h2>
+            <button
+              onClick={loadUsers}
+              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition text-sm"
+            >
+              🔄 Refresh
+            </button>
+          </div>
+          {isLoading ? (
+            <div className="text-center py-12">
+              <div className="animate-spin text-4xl mb-2">⚽</div>
+              <div className="text-gray-500">Loading participants...</div>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {users.map((user) => (
               <div
                 key={user.id}
                 className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50"
@@ -476,12 +506,13 @@ export default function ParticipantsManagement() {
                 </div>
               </div>
             ))}
-            {users.length === 0 && (
-              <div className="text-center py-12 text-gray-500">
-                No participants yet. Users will appear here after enrollment.
-              </div>
-            )}
-          </div>
+              {users.length === 0 && (
+                <div className="text-center py-12 text-gray-500">
+                  No participants yet. Click "📋 Batch Add (13)" or "➕ Add Single" to create participants.
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </div>
