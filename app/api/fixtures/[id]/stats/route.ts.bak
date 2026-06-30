@@ -9,7 +9,7 @@ export async function GET(
     const { id } = await params;
 
     // Get all predictions for this fixture
-    const allPredictions = await db.getAllPredictions();
+    const allPredictions = db.getAllPredictions();
     const fixturePredictions = allPredictions.filter(p => p.fixtureId === id);
 
     if (fixturePredictions.length === 0) {

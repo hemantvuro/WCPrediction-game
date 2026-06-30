@@ -13,7 +13,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const fixture = await db.getFixture(fixtureId);
+    const fixture = db.getFixture(fixtureId);
     if (!fixture) {
       return NextResponse.json(
         { error: 'Fixture not found' },
@@ -28,7 +28,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const pred = await db.createPrediction({
+    const pred = db.createPrediction({
       userId,
       fixtureId,
       prediction,
@@ -39,7 +39,6 @@ export async function POST(request: Request) {
 
     return NextResponse.json(pred);
   } catch (error) {
-    console.error('Error in POST /api/predictions:', error);
     return NextResponse.json(
       { error: 'Failed to create prediction' },
       { status: 500 }
@@ -53,14 +52,13 @@ export async function GET(request: Request) {
     const userId = searchParams.get('userId');
 
     if (userId) {
-      const predictions = await db.getUserPredictions(userId);
+      const predictions = db.getUserPredictions(userId);
       return NextResponse.json(predictions);
     }
 
-    const predictions = await db.getAllPredictions();
+    const predictions = db.getAllPredictions();
     return NextResponse.json(predictions);
   } catch (error) {
-    console.error('Error in GET /api/predictions:', error);
     return NextResponse.json(
       { error: 'Failed to fetch predictions' },
       { status: 500 }

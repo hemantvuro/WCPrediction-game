@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
     const created = [];
     for (const fixtureData of apiFixtures) {
       try {
-        const fixture = await db.createFixture(fixtureData);
+        const fixture = db.createFixture(fixtureData);
         created.push(fixture);
       } catch (error) {
         console.error('Failed to create fixture:', error);

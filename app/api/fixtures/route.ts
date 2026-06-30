@@ -7,7 +7,7 @@ let autoSyncAttempted = false;
 
 export async function GET() {
   try {
-    let fixtures = db.getAllFixtures();
+    let fixtures = await db.getAllFixtures();
 
     // Auto-sync fixtures from API on first load if database is empty
     if (fixtures.length === 0 && !autoSyncAttempted) {
@@ -18,10 +18,10 @@ export async function GET() {
         const apiFixtures = await syncFixtures(2000); // World Cup 2022
 
         for (const fixtureData of apiFixtures) {
-          db.createFixture(fixtureData);
+          await db.createFixture(fixtureData);
         }
 
-        fixtures = db.getAllFixtures();
+        fixtures = await db.getAllFixtures();
         console.log(`✅ Auto-synced ${fixtures.length} fixtures from API`);
       } catch (error) {
         console.error('❌ Auto-sync failed:', error);
@@ -33,12 +33,13 @@ export async function GET() {
     fixtures = updateFixtureStatuses(fixtures);
 
     // Save updated statuses back to database
-    fixtures.forEach(fixture => {
-      db.updateFixture(fixture.id, { status: fixture.status });
-    });
+    await Promise.all(fixtures.map(fixture =>
+      db.updateFixture(fixture.id, { status: fixture.status })
+    ));
 
     return NextResponse.json(fixtures);
   } catch (error) {
+    console.error('Error in GET /api/fixtures:', error);
     return NextResponse.json(
       { error: 'Failed to fetch fixtures' },
       { status: 500 }

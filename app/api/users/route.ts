@@ -13,7 +13,8 @@ export async function POST(request: Request) {
       );
     }
 
-    const existingUser = db.getUserByPhone(phoneNumber);
+    // Check if user already exists
+    const existingUser = await db.getUserByPhone(phoneNumber);
     if (existingUser) {
       return NextResponse.json(existingUser);
     }
@@ -21,13 +22,15 @@ export async function POST(request: Request) {
     // Grant admin rights to Hemant
     const isAdmin = phoneNumber === '7507057136' && firstName.toLowerCase() === 'hemant';
 
-    const user = db.createUser({
+    // Create new user
+    const user = await db.createUser({
       firstName,
       phoneNumber,
       isAdmin
     });
     return NextResponse.json(user, { status: 201 });
   } catch (error) {
+    console.error('Error in POST /api/users:', error);
     return NextResponse.json(
       { error: 'Failed to create user' },
       { status: 500 }
@@ -37,9 +40,10 @@ export async function POST(request: Request) {
 
 export async function GET() {
   try {
-    const users = db.getAllUsers();
+    const users = await db.getAllUsers();
     return NextResponse.json(users);
   } catch (error) {
+    console.error('Error in GET /api/users:', error);
     return NextResponse.json(
       { error: 'Failed to fetch users' },
       { status: 500 }

@@ -9,7 +9,7 @@ export async function PUT(
     const body = await request.json();
     const { name, flag } = body;
 
-    const updated = await db.updateTeam(params.id, { name, flag });
+    const updated = db.updateTeam(params.id, { name, flag });
 
     if (!updated) {
       return NextResponse.json({ error: 'Team not found' }, { status: 404 });
@@ -27,7 +27,7 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-    const deleted = await db.deleteTeam(params.id);
+    const deleted = db.deleteTeam(params.id);
     if (!deleted) {
       return NextResponse.json({ error: 'Team not found' }, { status: 404 });
     }

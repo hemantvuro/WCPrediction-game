@@ -33,7 +33,7 @@ export async function PUT(
 
     console.log('PUT /api/fixtures/[id] - Update data:', updateData);
 
-    const updated = await db.updateFixture(id, updateData);
+    const updated = db.updateFixture(id, updateData);
 
     if (!updated) {
       console.error('Fixture not found:', id);
@@ -54,12 +54,12 @@ export async function DELETE(
 ) {
   try {
     const { id } = await params;
-    const fixture = await db.getFixture(id);
+    const fixture = db.getFixture(id);
     if (!fixture) {
       return NextResponse.json({ error: 'Fixture not found' }, { status: 404 });
     }
 
-    const deleted = await db.deleteFixture(id);
+    const deleted = db.deleteFixture(id);
     if (!deleted) {
       return NextResponse.json({ error: 'Failed to delete fixture' }, { status: 500 });
     }

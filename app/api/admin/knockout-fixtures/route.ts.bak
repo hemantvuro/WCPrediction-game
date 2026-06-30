@@ -13,7 +13,7 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    const fixture = await db.getFixture(fixtureId);
+    const fixture = db.getFixture(fixtureId);
     if (!fixture) {
       return NextResponse.json(
         { error: 'Fixture not found' },
@@ -21,7 +21,7 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    const updated = await db.updateFixture(fixtureId, {
+    const updated = db.updateFixture(fixtureId, {
       teamA,
       teamB,
       teamAFlag: teamAFlag || '⚽',

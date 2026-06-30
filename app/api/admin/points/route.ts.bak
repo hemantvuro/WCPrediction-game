@@ -3,10 +3,9 @@ import { db } from '@/lib/database';
 
 export async function GET() {
   try {
-    const rules = await db.getAllPointsRules();
+    const rules = db.getAllPointsRules();
     return NextResponse.json(rules);
   } catch (error) {
-    console.error('Error in GET /api/admin/points:', error);
     return NextResponse.json(
       { error: 'Failed to fetch points rules' },
       { status: 500 }
@@ -27,11 +26,10 @@ export async function PUT(request: Request) {
     }
 
     await db.updatePointsRule(stage, updates);
-    const rule = await db.getPointsRule(stage);
+    const rule = db.getPointsRule(stage);
 
     return NextResponse.json(rule);
   } catch (error) {
-    console.error('Error in PUT /api/admin/points:', error);
     return NextResponse.json(
       { error: 'Failed to update points rule' },
       { status: 500 }

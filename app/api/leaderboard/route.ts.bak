@@ -3,10 +3,9 @@ import { db } from '@/lib/database';
 
 export async function GET() {
   try {
-    const leaderboard = await db.calculateLeaderboard();
+    const leaderboard = db.calculateLeaderboard();
     return NextResponse.json(leaderboard);
   } catch (error) {
-    console.error('Error in GET /api/leaderboard:', error);
     return NextResponse.json(
       { error: 'Failed to fetch leaderboard' },
       { status: 500 }

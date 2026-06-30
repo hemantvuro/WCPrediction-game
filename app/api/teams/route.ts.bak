@@ -3,7 +3,7 @@ import { db } from '@/lib/database';
 
 export async function GET() {
   try {
-    const teams = await db.getAllTeams();
+    const teams = db.getAllTeams();
     return NextResponse.json(teams);
   } catch (error) {
     console.error('Failed to fetch teams:', error);
@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Name and flag are required' }, { status: 400 });
     }
 
-    const newTeam = await db.createTeam({ name, flag });
+    const newTeam = db.createTeam({ name, flag });
     return NextResponse.json(newTeam, { status: 201 });
   } catch (error) {
     console.error('Failed to create team:', error);

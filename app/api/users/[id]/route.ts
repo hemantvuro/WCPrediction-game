@@ -10,7 +10,7 @@ export async function PUT(
     const body = await request.json();
     const { firstName, phoneNumber, points } = body;
 
-    const updated = db.updateUser(id, { firstName, phoneNumber, points });
+    const updated = await db.updateUser(id, { firstName, phoneNumber, points });
 
     if (!updated) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
@@ -29,7 +29,7 @@ export async function DELETE(
 ) {
   try {
     const { id } = await params;
-    const deleted = db.deleteUser(id);
+    const deleted = await db.deleteUser(id);
     if (!deleted) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
