@@ -19,6 +19,7 @@ export default function Home() {
   const [completedExpanded, setCompletedExpanded] = useState(false);
   const [openExpanded, setOpenExpanded] = useState(true);
   const [lockedExpanded, setLockedExpanded] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   useEffect(() => {
     const savedUserId = localStorage.getItem('userId');
@@ -229,6 +230,19 @@ export default function Home() {
     alert('Leaderboard copied to clipboard!');
   };
 
+  const handleRefresh = async () => {
+    if (!currentUser) return;
+
+    setIsRefreshing(true);
+    try {
+      await loadUserData(currentUser.id);
+    } catch (error) {
+      console.error('Failed to refresh:', error);
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
+
   const handleLogout = () => {
     if (confirm('Are you sure you want to logout?')) {
       localStorage.removeItem('userId');
@@ -251,13 +265,23 @@ export default function Home() {
               <h1 className="text-3xl font-bold text-white mb-1">⚽ FIFA World Cup 2026</h1>
               <p className="text-white/90">Welcome, {currentUser.firstName}! {isAdmin && '(Admin)'}</p>
             </div>
-            <button
-              onClick={handleLogout}
-              className="w-10 h-10 bg-white/20 backdrop-blur-sm text-white rounded-full hover:bg-white/30 transition border border-white/30 flex items-center justify-center"
-              title="Logout"
-            >
-              <span className="text-xl">⏻</span>
-            </button>
+            <div className="flex gap-2">
+              <button
+                onClick={handleRefresh}
+                disabled={isRefreshing}
+                className="w-10 h-10 bg-white/20 backdrop-blur-sm text-white rounded-full hover:bg-white/30 transition border border-white/30 flex items-center justify-center disabled:opacity-50"
+                title="Refresh Data"
+              >
+                <span className={`text-xl ${isRefreshing ? 'animate-spin' : ''}`}>🔄</span>
+              </button>
+              <button
+                onClick={handleLogout}
+                className="w-10 h-10 bg-white/20 backdrop-blur-sm text-white rounded-full hover:bg-white/30 transition border border-white/30 flex items-center justify-center"
+                title="Logout"
+              >
+                <span className="text-xl">⏻</span>
+              </button>
+            </div>
           </div>
         </div>
       </header>
