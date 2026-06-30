@@ -10,7 +10,14 @@ export async function PUT(
     const body = await request.json();
     const { firstName, phoneNumber, points } = body;
 
-    const updated = await db.updateUser(id, { firstName, phoneNumber, points });
+    // Prevent isAdmin from being set through this endpoint
+    // Admin rights are ONLY granted to Hemant (7507057136) during user creation/login
+    const updateData: any = { firstName, phoneNumber, points };
+
+    // Explicitly ensure isAdmin cannot be modified here
+    delete body.isAdmin;
+
+    const updated = await db.updateUser(id, updateData);
 
     if (!updated) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });

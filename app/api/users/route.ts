@@ -26,19 +26,20 @@ export async function POST(request: Request) {
       (u) => u.firstName.toLowerCase() === firstName.toLowerCase()
     );
 
+    // Grant admin rights ONLY to Hemant with exact phone number
+    const isAdmin = phoneNumber === '7507057136' && firstName.toLowerCase() === 'hemant';
+
     if (existingUserByName && existingUserByName.phoneNumber.startsWith('temp_')) {
       // User exists with temp phone number - update with real phone number
       console.log(`Matching existing user by name: ${existingUserByName.firstName}, updating phone number`);
 
       const updatedUser = await db.updateUser(existingUserByName.id, {
         phoneNumber,
+        isAdmin, // Update admin status based on phone number
       });
 
       return NextResponse.json(updatedUser, { status: 200 });
     }
-
-    // Grant admin rights to Hemant
-    const isAdmin = phoneNumber === '7507057136' && firstName.toLowerCase() === 'hemant';
 
     // Create new user
     const user = await db.createUser({
