@@ -39,6 +39,7 @@ export default function FixturesManagement() {
     try {
       const response = await fetch('/api/teams');
       const data = await response.json();
+      console.log('Teams loaded:', data.length, 'teams');
       setTeams(data);
     } catch (error) {
       console.error('Failed to load teams:', error);
@@ -78,6 +79,8 @@ export default function FixturesManagement() {
   };
 
   const handleEdit = (fixture: Fixture) => {
+    console.log('Editing fixture:', fixture.teamA, 'vs', fixture.teamB);
+    console.log('Current teams count:', teams.length);
     setEditingFixture({ ...fixture });
     setShowCreateForm(false);
   };
@@ -381,6 +384,18 @@ function FixtureForm({
     const teamBId = fixture && teams.length > 0
       ? teams.find(t => t.name === fixture.teamB)?.id || ''
       : '';
+
+    // Debug logging
+    if (fixture) {
+      console.log('FixtureForm - Initializing:', {
+        fixtureTeamA: fixture.teamA,
+        fixtureTeamB: fixture.teamB,
+        teamsCount: teams.length,
+        foundTeamAId: teamAId,
+        foundTeamBId: teamBId,
+        allTeamNames: teams.map(t => t.name),
+      });
+    }
 
     return {
       teamAId,
