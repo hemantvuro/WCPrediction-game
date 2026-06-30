@@ -80,8 +80,18 @@ export default function FixturesManagement() {
   };
 
   const handleEdit = (fixture: Fixture) => {
-    console.log('Editing fixture:', fixture.teamA, 'vs', fixture.teamB);
+    console.log('=== EDITING FIXTURE ===');
+    console.log('Fixture ID:', fixture.id);
+    console.log('Teams:', fixture.teamA, 'vs', fixture.teamB);
+    console.log('Full fixture object:', fixture);
     console.log('Current teams count:', teams.length);
+
+    if (!fixture.id) {
+      console.error('ERROR: Fixture is missing ID!');
+      alert('Error: Cannot edit this fixture - it is missing an ID. Please refresh the page.');
+      return;
+    }
+
     setEditingFixture({ ...fixture });
     setShowCreateForm(false);
   };
@@ -104,6 +114,14 @@ export default function FixturesManagement() {
   const handleSave = async (fixtureData: any) => {
     try {
       console.log('handleSave called with:', fixtureData);
+
+      if (!fixtureData.id) {
+        console.error('ERROR: Fixture data is missing ID!', fixtureData);
+        alert('Error: Cannot update fixture - ID is missing. Please refresh the page and try again.');
+        return;
+      }
+
+      console.log('Sending PUT request to:', `/api/fixtures/${fixtureData.id}`);
 
       const response = await fetch(`/api/fixtures/${fixtureData.id}`, {
         method: 'PUT',
@@ -566,7 +584,13 @@ function FixtureForm({
       enableScorerPrediction: formData.enableScorerPrediction,
     };
 
+    // For editing, ensure we have the fixture ID
     if (fixture) {
+      if (!fixture.id) {
+        console.error('Fixture is missing ID:', fixture);
+        alert('Error: Fixture ID is missing. Please close and reopen the edit form.');
+        return;
+      }
       fixtureData.id = fixture.id;
     }
 
