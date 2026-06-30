@@ -1,0 +1,38 @@
+import { NextResponse } from 'next/server';
+import { db } from '@/lib/database';
+
+export async function GET() {
+  try {
+    const rules = db.getAllPointsRules();
+    return NextResponse.json(rules);
+  } catch (error) {
+    return NextResponse.json(
+      { error: 'Failed to fetch points rules' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function PUT(request: Request) {
+  try {
+    const body = await request.json();
+    const { stage, ...updates } = body;
+
+    if (!stage) {
+      return NextResponse.json(
+        { error: 'Stage is required' },
+        { status: 400 }
+      );
+    }
+
+    db.updatePointsRule(stage, updates);
+    const rule = db.getPointsRule(stage);
+
+    return NextResponse.json(rule);
+  } catch (error) {
+    return NextResponse.json(
+      { error: 'Failed to update points rule' },
+      { status: 500 }
+    );
+  }
+}

@@ -1,0 +1,92 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* FIFA 2026 Official Colors */
+  --fifa-red: #E30613;
+  --fifa-blue: #0066CC;
+  --fifa-teal: #00A99D;
+  --fifa-orange: #FF6B35;
+  --fifa-purple: #6B2D5C;
+  --fifa-gold: #FFD700;
+
+  --background: #ffffff;
+  --foreground: #171717;
+  --primary: var(--fifa-blue);
+  --accent: var(--fifa-teal);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .fifa-gradient {
+    background: linear-gradient(135deg, var(--fifa-blue) 0%, var(--fifa-teal) 50%, var(--fifa-purple) 100%);
+  }
+
+  .fifa-gradient-alt {
+    background: linear-gradient(135deg, var(--fifa-red) 0%, var(--fifa-orange) 100%);
+  }
+}
+
+/* FIFA 2026 Theme Enhancements */
+.group-badge {
+  background: linear-gradient(135deg, var(--fifa-teal), var(--fifa-blue));
+  color: white;
+  font-weight: 600;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+}
+
+.stage-header {
+  background: linear-gradient(90deg, var(--fifa-blue), var(--fifa-teal));
+  color: white;
+  font-weight: 700;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  margin: 1.5rem 0 1rem 0;
+  font-size: 1.125rem;
+}
+
+/* Fix input text color */
+input, select, textarea {
+  color: #111827 !important;
+}
+
+input::placeholder, select::placeholder, textarea::placeholder {
+  color: #9CA3AF !important;
+}
+
+/* Ensure dark text in form inputs */
+input[type="text"],
+input[type="number"],
+input[type="tel"],
+input[type="email"],
+input[type="datetime-local"],
+select,
+textarea {
+  color: #111827 !important;
+  background-color: white;
+}
+
+/* Option elements in select */
+option {
+  color: #111827 !important;
+  background-color: white;
+}

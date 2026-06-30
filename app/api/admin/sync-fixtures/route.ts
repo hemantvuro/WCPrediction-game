@@ -1,0 +1,56 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { db } from '@/lib/database';
+import { syncFixtures, COMPETITIONS } from '@/lib/football-data-api';
+
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json();
+    const { competitionId } = body;
+
+    const competition = competitionId || COMPETITIONS.WORLD_CUP_2022;
+
+    console.log('Starting fixture sync for competition:', competition);
+
+    // Fetch fixtures from API
+    const apiFixtures = await syncFixtures(competition);
+
+    if (apiFixtures.length === 0) {
+      return NextResponse.json(
+        { error: 'No fixtures found from API' },
+        { status: 404 }
+      );
+    }
+
+    // Clear all existing fixtures before importing from API
+    console.log('Clearing existing fixtures...');
+    db.clearAllFixtures();
+
+    // Create new fixtures in database
+    const created = [];
+    for (const fixtureData of apiFixtures) {
+      try {
+        const fixture = db.createFixture(fixtureData);
+        created.push(fixture);
+      } catch (error) {
+        console.error('Failed to create fixture:', error);
+      }
+    }
+
+    console.log(`✅ Synced ${created.length} fixtures to database`);
+
+    return NextResponse.json({
+      success: true,
+      message: `Successfully synced ${created.length} fixtures`,
+      fixtures: created,
+    });
+  } catch (error: any) {
+    console.error('Failed to sync fixtures:', error);
+    return NextResponse.json(
+      {
+        error: 'Failed to sync fixtures',
+        message: error.message || String(error)
+      },
+      { status: 500 }
+    );
+  }
+}
