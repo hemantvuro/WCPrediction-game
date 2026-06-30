@@ -15,6 +15,7 @@ export default function FixturesManagement() {
   const [lockedExpanded, setLockedExpanded] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
   const [isInitializingTeams, setIsInitializingTeams] = useState(false);
+  const [isAutoUpdating, setIsAutoUpdating] = useState(false);
 
   useEffect(() => {
     loadData();
@@ -212,6 +213,33 @@ export default function FixturesManagement() {
     }
   };
 
+  const handleAutoUpdate = async () => {
+    if (!confirm('This will automatically set fixture statuses based on match dates:\n\n- Tomorrow\'s matches (before 1PM) → OPEN\n- Past matches → COMPLETED\n- Future matches → LOCKED (Upcoming)\n\nContinue?')) {
+      return;
+    }
+
+    setIsAutoUpdating(true);
+    try {
+      const response = await fetch('/api/admin/auto-update-fixtures', {
+        method: 'POST',
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        alert(`✅ ${data.message}\n\nOpen: ${data.updates.openCount}\nCompleted: ${data.updates.completedCount}\nUpcoming: ${data.updates.upcomingCount}`);
+        await loadFixtures();
+      } else {
+        alert(`❌ Failed to auto-update:\n${data.message || data.error}`);
+      }
+    } catch (error: any) {
+      console.error('Failed to auto-update fixtures:', error);
+      alert(`❌ Failed to auto-update:\n${error.message || String(error)}`);
+    } finally {
+      setIsAutoUpdating(false);
+    }
+  };
+
   const handleSyncFixtures = async () => {
     if (!confirm('This will import fixtures from Football-Data.org API. Continue?')) {
       return;
@@ -265,11 +293,11 @@ export default function FixturesManagement() {
             <h1 className="text-3xl font-bold text-white">Fixtures Management</h1>
             <div className="flex gap-2">
               <button
-                onClick={handleInitTeams}
-                disabled={isInitializingTeams}
-                className="px-4 py-2 bg-yellow-400 text-gray-900 rounded-lg hover:bg-yellow-500 transition font-semibold shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                onClick={handleAutoUpdate}
+                disabled={isAutoUpdating}
+                className="px-4 py-2 bg-green-400 text-white rounded-lg hover:bg-green-500 transition font-semibold shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {isInitializingTeams ? '⏳ Loading...' : '⚽ Init Teams'}
+                {isAutoUpdating ? '⏳ Updating...' : '🤖 Auto-Update Status'}
               </button>
               <button
                 onClick={handleSyncFixtures}
