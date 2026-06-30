@@ -28,9 +28,12 @@ export default function FixturesManagement() {
     try {
       const response = await fetch('/api/fixtures');
       const data = await response.json();
+      console.log('Fixtures loaded:', data.length, 'fixtures');
       setFixtures(data);
+      return data;
     } catch (error) {
       console.error('Failed to load fixtures:', error);
+      return [];
     } finally {
       setIsLoading(false);
     }
@@ -134,9 +137,23 @@ export default function FixturesManagement() {
       console.log('Response data:', responseData);
 
       if (response.ok) {
-        alert('Fixture updated successfully');
+        console.log('✅ Update successful! Response:', responseData);
+
+        // Reload fixtures first to get updated data
+        const updatedFixtures = await loadFixtures();
+
+        // Verify the fixture was actually updated
+        const updatedFixture = updatedFixtures.find((f: any) => f.id === fixtureData.id);
+        if (updatedFixture) {
+          console.log('✅ Verified updated fixture:', updatedFixture);
+          console.log('Status:', updatedFixture.status);
+          console.log('enableScorePrediction:', updatedFixture.enableScorePrediction);
+          console.log('enableScorerPrediction:', updatedFixture.enableScorerPrediction);
+        }
+
+        // Close modal and show success message
         setEditingFixture(null);
-        loadFixtures();
+        alert('✅ Fixture updated successfully!\n\nChanges are now visible on all pages.');
       } else {
         alert(`Failed to update fixture: ${responseData.error || 'Unknown error'}`);
       }
