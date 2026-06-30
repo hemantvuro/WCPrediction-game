@@ -14,6 +14,7 @@ export default function FixturesManagement() {
   const [openExpanded, setOpenExpanded] = useState(true);
   const [lockedExpanded, setLockedExpanded] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
+  const [isInitializingTeams, setIsInitializingTeams] = useState(false);
 
   useEffect(() => {
     loadData();
@@ -149,6 +150,33 @@ export default function FixturesManagement() {
     }
   };
 
+  const handleInitTeams = async () => {
+    if (!confirm('This will initialize all 48 World Cup 2026 teams in the database. Continue?')) {
+      return;
+    }
+
+    setIsInitializingTeams(true);
+    try {
+      const response = await fetch('/api/admin/init-teams', {
+        method: 'POST',
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        alert(`✅ ${data.message}`);
+        await loadTeams(); // Reload teams
+      } else {
+        alert(`❌ Failed to initialize teams:\n${data.message || data.error}`);
+      }
+    } catch (error: any) {
+      console.error('Failed to initialize teams:', error);
+      alert(`❌ Failed to initialize teams:\n${error.message || String(error)}`);
+    } finally {
+      setIsInitializingTeams(false);
+    }
+  };
+
   const handleSyncFixtures = async () => {
     if (!confirm('This will import fixtures from Football-Data.org API. Continue?')) {
       return;
@@ -201,6 +229,13 @@ export default function FixturesManagement() {
           <div className="flex justify-between items-center">
             <h1 className="text-3xl font-bold text-white">Fixtures Management</h1>
             <div className="flex gap-2">
+              <button
+                onClick={handleInitTeams}
+                disabled={isInitializingTeams}
+                className="px-4 py-2 bg-yellow-400 text-gray-900 rounded-lg hover:bg-yellow-500 transition font-semibold shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isInitializingTeams ? '⏳ Loading...' : '⚽ Init Teams'}
+              </button>
               <button
                 onClick={handleSyncFixtures}
                 disabled={isSyncing}
