@@ -399,6 +399,9 @@ function FixtureForm({
     enableScorerPrediction: fixture?.enableScorerPrediction !== false,
   });
 
+  const [isFetchingScorers, setIsFetchingScorers] = useState(false);
+  const [fetchMessage, setFetchMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
+
   const handleTeamChange = (field: 'teamAId' | 'teamBId', teamId: string) => {
     const team = teams.find(t => t.id === teamId);
     if (!team) return;
@@ -417,6 +420,50 @@ function FixtureForm({
         teamB: team.name,
         teamBFlag: team.flag,
       });
+    }
+  };
+
+  const handleFetchScorers = async () => {
+    if (!fixture?.id) {
+      alert('Please save the fixture first before fetching goal scorers');
+      return;
+    }
+
+    setIsFetchingScorers(true);
+    setFetchMessage(null);
+
+    try {
+      const response = await fetch(`/api/fixtures/${fixture.id}/fetch-scorers`, {
+        method: 'POST',
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setFormData({
+          ...formData,
+          goalScorers: data.goalScorersString,
+          scoreA: data.homeGoals?.toString() || formData.scoreA,
+          scoreB: data.awayGoals?.toString() || formData.scoreB,
+        });
+        setFetchMessage({
+          type: 'success',
+          text: `✅ ${data.message || 'Goal scorers fetched successfully'}`
+        });
+      } else {
+        setFetchMessage({
+          type: 'error',
+          text: `❌ ${data.message || 'Failed to fetch goal scorers'}`
+        });
+      }
+    } catch (error) {
+      console.error('Failed to fetch goal scorers:', error);
+      setFetchMessage({
+        type: 'error',
+        text: '❌ Network error. Please check your connection and try again.'
+      });
+    } finally {
+      setIsFetchingScorers(false);
     }
   };
 
@@ -642,17 +689,52 @@ function FixtureForm({
             </div>
           </div>
           <div className="md:col-span-2">
-            <label className="block text-sm font-bold text-gray-700 mb-1">Goal Scorers (comma-separated)</label>
+            <div className="flex justify-between items-center mb-2">
+              <label className="block text-sm font-bold text-gray-700">Goal Scorers</label>
+              {fixture?.id && (
+                <button
+                  type="button"
+                  onClick={handleFetchScorers}
+                  disabled={isFetchingScorers}
+                  className="px-4 py-1.5 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition font-semibold text-sm shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                >
+                  {isFetchingScorers ? (
+                    <>
+                      <span className="animate-spin">⏳</span>
+                      Fetching...
+                    </>
+                  ) : (
+                    <>
+                      🔄 Fetch from API
+                    </>
+                  )}
+                </button>
+              )}
+            </div>
+
+            {fetchMessage && (
+              <div className={`mb-2 px-3 py-2 rounded-lg text-sm font-medium ${
+                fetchMessage.type === 'success'
+                  ? 'bg-green-50 text-green-800 border border-green-200'
+                  : 'bg-red-50 text-red-800 border border-red-200'
+              }`}>
+                {fetchMessage.text}
+              </div>
+            )}
+
             <p className="text-xs text-blue-600 mb-2">
-              💡 Tip: If a player scores multiple goals, enter their name multiple times (e.g., "Messi, Messi, Ronaldo" for 2 goals by Messi and 1 by Ronaldo)
+              💡 Click "Fetch from API" to auto-fill goal scorers, or enter manually below
             </p>
             <input
               type="text"
               value={formData.goalScorers}
               onChange={(e) => setFormData({ ...formData, goalScorers: e.target.value })}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
-              placeholder="Messi, Messi, Ronaldo (if Messi scored 2 goals)"
+              placeholder="Will auto-fill when you click 'Fetch from API'"
             />
+            <p className="text-xs text-gray-500 mt-1">
+              Format: Names separated by commas. Repeat name for multiple goals (e.g., "Messi, Messi, Ronaldo")
+            </p>
           </div>
         </div>
       )}
