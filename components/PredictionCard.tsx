@@ -30,6 +30,7 @@ export default function PredictionCard({ fixture, existingPrediction, onPredict 
   const [countdown, setCountdown] = useState<string>('');
   const [isExpired, setIsExpired] = useState(false);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
+  const [showSaved, setShowSaved] = useState(false);
   const [stats, setStats] = useState<FixtureStats | null>(null);
 
   const isGroupStage = fixture.stage === 'group';
@@ -38,15 +39,27 @@ export default function PredictionCard({ fixture, existingPrediction, onPredict 
   const enableScorePrediction = fixture.enableScorePrediction !== false;
   const enableScorerPrediction = fixture.enableScorerPrediction !== false;
 
-  // Fetch stats when user has made a prediction
+  // Update state when existingPrediction changes
   useEffect(() => {
-    if (existingPrediction && !isExpired) {
+    if (existingPrediction) {
+      setSelectedOutcome(existingPrediction.prediction);
+      setScoreA(existingPrediction.scoreA?.toString() || '');
+      setScoreB(existingPrediction.scoreB?.toString() || '');
+      setGoalScorer1(existingPrediction.goalScorers?.[0] || '');
+      setGoalScorer2(existingPrediction.goalScorers?.[1] || '');
+      setGoalScorer3(existingPrediction.goalScorers?.[2] || '');
+    }
+  }, [existingPrediction]);
+
+  // Fetch stats for all fixtures (not just after user predicts)
+  useEffect(() => {
+    if (!isExpired) {
       fetchStats();
       // Refresh stats every 30 seconds
       const interval = setInterval(fetchStats, 30000);
       return () => clearInterval(interval);
     }
-  }, [existingPrediction, isExpired]);
+  }, [fixture.id, isExpired]);
 
   const fetchStats = async () => {
     try {
@@ -131,7 +144,16 @@ export default function PredictionCard({ fixture, existingPrediction, onPredict 
         scoreBNum,
         goalScorers
       );
+
+      // Show saved message
+      setShowSaved(true);
       setLastSaved(new Date());
+
+      // Hide after 3 seconds
+      setTimeout(() => {
+        setShowSaved(false);
+      }, 3000);
+
       // Fetch stats after saving
       fetchStats();
     } catch (error) {
@@ -263,8 +285,8 @@ export default function PredictionCard({ fixture, existingPrediction, onPredict 
         </div>
       )}
 
-      {/* Crowd Stats - Only visible after user predicts */}
-      {existingPrediction && stats && stats.total > 0 && !isExpired && (
+      {/* Crowd Stats - Visible for all fixtures */}
+      {stats && stats.total > 0 && !isExpired && (
         <div className="p-6 bg-gradient-to-br from-amber-50 to-orange-50 border-b-2 border-gray-100">
           <h3 className="text-sm font-bold text-gray-700 mb-3 text-center flex items-center justify-center gap-2">
             📊 CROWD PREDICTIONS
@@ -380,14 +402,9 @@ export default function PredictionCard({ fixture, existingPrediction, onPredict 
           )}
         </div>
 
-        {lastSaved && !isExpired && (
-          <p className="text-xs text-center text-green-600 mt-2 font-medium">
-            ✓ Saved
-          </p>
-        )}
-
-        {existingPrediction && (
-          <div className="mt-3 bg-green-50 rounded-lg p-2 border border-green-200">
+        {/* Single "Saved" message that auto-hides after 3 seconds */}
+        {showSaved && !isExpired && (
+          <div className="mt-3 bg-green-50 rounded-lg p-2 border border-green-200 animate-fade-in">
             <p className="text-xs text-center text-green-700 font-semibold">
               ✓ Saved
             </p>
