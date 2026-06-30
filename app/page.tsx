@@ -300,14 +300,6 @@ export default function Home() {
             </div>
             <div className="flex gap-2">
               <button
-                onClick={handleRefresh}
-                disabled={isRefreshing}
-                className="w-10 h-10 bg-white/20 backdrop-blur-sm text-white rounded-full hover:bg-white/30 transition border border-white/30 flex items-center justify-center disabled:opacity-50"
-                title="Refresh Data"
-              >
-                <span className={`text-xl ${isRefreshing ? 'animate-spin' : ''}`}>🔄</span>
-              </button>
-              <button
                 onClick={handleLogout}
                 className="w-10 h-10 bg-white/20 backdrop-blur-sm text-white rounded-full hover:bg-white/30 transition border border-white/30 flex items-center justify-center"
                 title="Logout"
