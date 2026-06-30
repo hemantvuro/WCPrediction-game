@@ -18,18 +18,18 @@ export async function POST(
       );
     }
 
-    let apiFixtureId = fixture.externalId;
+    let apiFixtureId: string | undefined = fixture.externalId;
 
     // If no external ID, try to search for it
     if (!apiFixtureId) {
       console.log(`No external ID for fixture ${id}, searching...`);
-      apiFixtureId = await searchFixture(
+      const searchResult = await searchFixture(
         fixture.teamA,
         fixture.teamB,
         fixture.matchDate
       );
 
-      if (!apiFixtureId) {
+      if (!searchResult) {
         return NextResponse.json(
           {
             error: 'Could not find match in API-Football database',
@@ -39,6 +39,7 @@ export async function POST(
         );
       }
 
+      apiFixtureId = searchResult;
       // Save the external ID for future use
       await db.updateFixture(id, { externalId: apiFixtureId });
     }

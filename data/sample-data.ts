@@ -7,7 +7,7 @@ import { MatchStage } from '@/types';
 // Format: 48 teams, 12 groups of 4, expanded knockout rounds
 // All times are in India Standard Time (IST / Asia/Kolkata)
 
-export function initializeSampleData() {
+export async function initializeSampleData() {
   // Initialize teams
   const teams = [
     { name: 'Mexico', flag: '🇲🇽' },
@@ -1176,13 +1176,13 @@ export function initializeSampleData() {
     });
   }
 
-  const sampleUser = db.createUser({
+  const sampleUser = await db.createUser({
     firstName: 'Hemant',
     phoneNumber: '7507057136',
   });
 
   // Set Hemant as admin
-  db.updateUser(sampleUser.id, { isAdmin: true });
+  await db.updateUser(sampleUser.id, { isAdmin: true });
 
   console.log('✅ FIFA 2026 World Cup - Teams loaded');
   console.log('📋 48 teams available for fixture creation');

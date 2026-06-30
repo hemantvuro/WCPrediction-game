@@ -260,12 +260,18 @@ class SupabaseDatabase {
 
     if (existing) {
       // Update existing prediction
-      return this.updatePrediction(existing.id, {
+      const updated = await this.updatePrediction(existing.id, {
         prediction: predictionData.prediction,
         scoreA: predictionData.scoreA,
         scoreB: predictionData.scoreB,
         goalScorers: predictionData.goalScorers,
-      })!;
+      });
+
+      if (!updated) {
+        throw new Error('Failed to update existing prediction');
+      }
+
+      return updated;
     }
 
     const { data, error } = await supabase

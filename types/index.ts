@@ -48,6 +48,7 @@ export interface Prediction {
   scoreA?: number;
   scoreB?: number;
   goalScorers?: string[];
+  pointsEarned?: number;
   createdAt: Date;
   updatedAt: Date;
 }
