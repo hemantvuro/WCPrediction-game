@@ -23,6 +23,20 @@ export default function Home() {
   useEffect(() => {
     const savedUserId = localStorage.getItem('userId');
     const savedUserData = localStorage.getItem('userData');
+    const sessionExpiry = localStorage.getItem('sessionExpiry');
+
+    // Check if session has expired (30 days)
+    if (sessionExpiry) {
+      const expiryDate = new Date(sessionExpiry);
+      if (expiryDate < new Date()) {
+        // Session expired, clear everything
+        localStorage.removeItem('userId');
+        localStorage.removeItem('userData');
+        localStorage.removeItem('sessionExpiry');
+        setIsLoading(false);
+        return;
+      }
+    }
 
     if (savedUserId) {
       // Load cached user data immediately to prevent logout flash
@@ -67,15 +81,22 @@ export default function Home() {
         setCurrentUser(user);
         // Cache user data to prevent logout on navigation
         localStorage.setItem('userData', JSON.stringify(user));
+
+        // Refresh session expiry on successful data load
+        const expiryDate = new Date();
+        expiryDate.setDate(expiryDate.getDate() + 30);
+        localStorage.setItem('sessionExpiry', expiryDate.toISOString());
       } else {
         console.error('User not found, clearing session');
         localStorage.removeItem('userId');
         localStorage.removeItem('userData');
+        localStorage.removeItem('sessionExpiry');
         setCurrentUser(null);
       }
     } catch (error) {
       console.error('Failed to load data:', error);
       // Don't logout on network errors, keep current user
+      // This prevents logout when navigating between pages or on temporary network issues
     } finally {
       setIsLoading(false);
     }
@@ -91,8 +112,15 @@ export default function Home() {
 
       const user = await response.json();
       setCurrentUser(user);
+
+      // Set session with 30-day expiry
+      const expiryDate = new Date();
+      expiryDate.setDate(expiryDate.getDate() + 30);
+
       localStorage.setItem('userId', user.id);
       localStorage.setItem('userData', JSON.stringify(user));
+      localStorage.setItem('sessionExpiry', expiryDate.toISOString());
+
       await loadUserData(user.id);
     } catch (error) {
       console.error('Failed to enroll:', error);
@@ -205,6 +233,7 @@ export default function Home() {
     if (confirm('Are you sure you want to logout?')) {
       localStorage.removeItem('userId');
       localStorage.removeItem('userData');
+      localStorage.removeItem('sessionExpiry');
       setCurrentUser(null);
       setFixtures([]);
       setPredictions([]);
