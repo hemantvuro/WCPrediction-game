@@ -201,6 +201,14 @@ export default function Home() {
 
   const isAdmin = currentUser?.isAdmin || false;
 
+  // Debug logging for admin status
+  console.log('🔍 Admin Check:', {
+    currentUser: currentUser?.firstName,
+    phone: currentUser?.phoneNumber,
+    isAdmin: currentUser?.isAdmin,
+    isAdminVar: isAdmin,
+  });
+
   const copyMatchPredictionMatches = () => {
     // Copy all matches from Match Prediction tab (upcomingFixtures - first 6 open fixtures)
     if (upcomingFixtures.length === 0) {
