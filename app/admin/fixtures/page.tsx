@@ -373,15 +373,9 @@ function FixtureForm({
   onSave: (fixture: any) => void;
   onCancel: () => void;
 }) {
-  // Find team IDs based on team names when editing
-  const findTeamId = (teamName: string): string => {
-    const team = teams.find(t => t.name === teamName);
-    return team?.id || '';
-  };
-
   const [formData, setFormData] = useState({
-    teamAId: fixture ? findTeamId(fixture.teamA) : '',
-    teamBId: fixture ? findTeamId(fixture.teamB) : '',
+    teamAId: '',
+    teamBId: '',
     teamA: fixture?.teamA || '',
     teamB: fixture?.teamB || '',
     teamAFlag: fixture?.teamAFlag || '',
@@ -398,6 +392,22 @@ function FixtureForm({
     enableScorePrediction: fixture?.enableScorePrediction !== false,
     enableScorerPrediction: fixture?.enableScorerPrediction !== false,
   });
+
+  // Update team IDs when teams load or fixture changes
+  useEffect(() => {
+    if (fixture && teams.length > 0) {
+      const teamAId = teams.find(t => t.name === fixture.teamA)?.id || '';
+      const teamBId = teams.find(t => t.name === fixture.teamB)?.id || '';
+
+      if (teamAId || teamBId) {
+        setFormData(prev => ({
+          ...prev,
+          teamAId,
+          teamBId,
+        }));
+      }
+    }
+  }, [fixture, teams]);
 
   const [isFetchingScorers, setIsFetchingScorers] = useState(false);
   const [fetchMessage, setFetchMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
