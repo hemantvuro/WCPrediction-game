@@ -114,13 +114,18 @@ export default function PredictionCard({ fixture, existingPrediction, onPredict 
     let scoreANum: number | undefined = undefined;
     let scoreBNum: number | undefined = undefined;
 
-    // Determine prediction based on enabled sections
-    if (enableMatchOutcome && selectedOutcome) {
-      prediction = selectedOutcome;
-    } else if (enableScorePrediction && scoreA && scoreB) {
+    // Parse scores if entered (always save them if provided)
+    if (enableScorePrediction && scoreA && scoreB) {
       scoreANum = parseInt(scoreA);
       scoreBNum = parseInt(scoreB);
+    }
 
+    // Determine prediction based on enabled sections
+    if (enableMatchOutcome && selectedOutcome) {
+      // Use selected outcome
+      prediction = selectedOutcome;
+    } else if (scoreANum !== undefined && scoreBNum !== undefined) {
+      // Derive prediction from score
       if (scoreANum > scoreBNum) {
         prediction = 'teamA';
       } else if (scoreBNum > scoreANum) {
