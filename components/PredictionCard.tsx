@@ -21,16 +21,15 @@ interface FixtureStats {
 }
 
 export default function PredictionCard({ fixture, existingPrediction, onPredict }: PredictionCardProps) {
-  const [selectedOutcome, setSelectedOutcome] = useState<PredictionResult | null>(existingPrediction?.prediction || null);
-  const [scoreA, setScoreA] = useState<string>(existingPrediction?.scoreA?.toString() || '');
-  const [scoreB, setScoreB] = useState<string>(existingPrediction?.scoreB?.toString() || '');
-  const [goalScorer1, setGoalScorer1] = useState<string>(existingPrediction?.goalScorers?.[0] || '');
-  const [goalScorer2, setGoalScorer2] = useState<string>(existingPrediction?.goalScorers?.[1] || '');
-  const [goalScorer3, setGoalScorer3] = useState<string>(existingPrediction?.goalScorers?.[2] || '');
+  const [selectedOutcome, setSelectedOutcome] = useState<PredictionResult | null>(null);
+  const [scoreA, setScoreA] = useState<string>('');
+  const [scoreB, setScoreB] = useState<string>('');
+  const [goalScorer1, setGoalScorer1] = useState<string>('');
+  const [goalScorer2, setGoalScorer2] = useState<string>('');
+  const [goalScorer3, setGoalScorer3] = useState<string>('');
   const [countdown, setCountdown] = useState<string>('');
   const [isExpired, setIsExpired] = useState(false);
-  const [lastSaved, setLastSaved] = useState<Date | null>(null);
-  const [showSaved, setShowSaved] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const [stats, setStats] = useState<FixtureStats | null>(null);
 
   const isGroupStage = fixture.stage === 'group';
@@ -39,8 +38,9 @@ export default function PredictionCard({ fixture, existingPrediction, onPredict 
   const enableScorePrediction = fixture.enableScorePrediction !== false;
   const enableScorerPrediction = fixture.enableScorerPrediction !== false;
 
-  // Update state when existingPrediction changes
+  // Initialize state from existingPrediction on mount and when it changes
   useEffect(() => {
+    console.log('📥 Loading existing prediction:', existingPrediction);
     if (existingPrediction) {
       setSelectedOutcome(existingPrediction.prediction);
       setScoreA(existingPrediction.scoreA?.toString() || '');
@@ -48,8 +48,13 @@ export default function PredictionCard({ fixture, existingPrediction, onPredict 
       setGoalScorer1(existingPrediction.goalScorers?.[0] || '');
       setGoalScorer2(existingPrediction.goalScorers?.[1] || '');
       setGoalScorer3(existingPrediction.goalScorers?.[2] || '');
+      console.log('✅ State updated:', {
+        outcome: existingPrediction.prediction,
+        scoreA: existingPrediction.scoreA,
+        scoreB: existingPrediction.scoreB,
+      });
     }
-  }, [existingPrediction]);
+  }, [existingPrediction?.id, existingPrediction?.prediction, existingPrediction?.scoreA, existingPrediction?.scoreB]);
 
   // Fetch stats for all fixtures (not just after user predicts)
   useEffect(() => {
@@ -110,14 +115,22 @@ export default function PredictionCard({ fixture, existingPrediction, onPredict 
   }, [selectedOutcome, scoreA, scoreB, goalScorer1, goalScorer2, goalScorer3, isExpired]);
 
   const handleAutoSave = async () => {
+    if (isSaving) return; // Prevent multiple simultaneous saves
+
     let prediction: PredictionResult | null = null;
     let scoreANum: number | undefined = undefined;
     let scoreBNum: number | undefined = undefined;
 
     // Parse scores if entered (always save them if provided)
-    if (enableScorePrediction && scoreA && scoreB) {
+    if (enableScorePrediction && scoreA !== '' && scoreB !== '') {
       scoreANum = parseInt(scoreA);
       scoreBNum = parseInt(scoreB);
+
+      // Validate parsed numbers
+      if (isNaN(scoreANum) || isNaN(scoreBNum)) {
+        console.log('⚠️ Invalid scores, skipping save');
+        return;
+      }
     }
 
     // Determine prediction based on enabled sections
@@ -137,10 +150,20 @@ export default function PredictionCard({ fixture, existingPrediction, onPredict 
 
     if (!prediction) return;
 
+    setIsSaving(true);
+
     try {
       const goalScorers = enableScorerPrediction
         ? [goalScorer1, goalScorer2, goalScorer3].filter(Boolean)
         : undefined;
+
+      console.log('💾 Saving prediction:', {
+        fixtureId: fixture.id,
+        prediction,
+        scoreA: scoreANum,
+        scoreB: scoreBNum,
+        goalScorers,
+      });
 
       await onPredict(
         fixture.id,
@@ -150,19 +173,14 @@ export default function PredictionCard({ fixture, existingPrediction, onPredict 
         goalScorers
       );
 
-      // Show saved message
-      setShowSaved(true);
-      setLastSaved(new Date());
-
-      // Hide after 3 seconds
-      setTimeout(() => {
-        setShowSaved(false);
-      }, 3000);
+      console.log('✅ Save complete');
 
       // Fetch stats after saving
       fetchStats();
     } catch (error) {
-      console.error('Auto-save failed:', error);
+      console.error('❌ Auto-save failed:', error);
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -407,11 +425,11 @@ export default function PredictionCard({ fixture, existingPrediction, onPredict 
           )}
         </div>
 
-        {/* Single "Saved" message that auto-hides after 3 seconds */}
-        {showSaved && !isExpired && (
-          <div className="mt-3 bg-green-50 rounded-lg p-2 border border-green-200 animate-fade-in">
+        {/* Persistent "Saved" indicator - always shows if prediction exists */}
+        {existingPrediction && !isExpired && (
+          <div className="mt-3 bg-green-50 rounded-lg p-2 border border-green-200">
             <p className="text-xs text-center text-green-700 font-semibold">
-              ✓ Saved
+              {isSaving ? '💾 Saving...' : '✓ Saved'}
             </p>
           </div>
         )}
