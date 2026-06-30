@@ -611,36 +611,47 @@ function FixtureForm({
               <option value="teamB">Team B Won</option>
             </select>
           </div>
-          <div className="grid grid-cols-2 gap-2">
-            <div>
-              <label className="block text-sm font-bold text-gray-700 mb-1">Score A</label>
-              <input
-                type="number"
-                value={formData.scoreA}
-                onChange={(e) => setFormData({ ...formData, scoreA: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
-                min="0"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-bold text-gray-700 mb-1">Score B</label>
-              <input
-                type="number"
-                value={formData.scoreB}
-                onChange={(e) => setFormData({ ...formData, scoreB: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
-                min="0"
-              />
+          <div className="md:col-span-2">
+            <label className="block text-sm font-bold text-gray-700 mb-2">
+              Final Score (90 + Extra Time)
+            </label>
+            <p className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded px-2 py-1 mb-2">
+              ⚠️ Enter score after 90 minutes + extra time (120 min total). Do NOT include penalty shootout goals.
+            </p>
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <input
+                  type="number"
+                  value={formData.scoreA}
+                  onChange={(e) => setFormData({ ...formData, scoreA: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+                  placeholder={`${formData.teamA || 'Team A'} goals`}
+                  min="0"
+                />
+              </div>
+              <div>
+                <input
+                  type="number"
+                  value={formData.scoreB}
+                  onChange={(e) => setFormData({ ...formData, scoreB: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+                  placeholder={`${formData.teamB || 'Team B'} goals`}
+                  min="0"
+                />
+              </div>
             </div>
           </div>
           <div className="md:col-span-2">
             <label className="block text-sm font-bold text-gray-700 mb-1">Goal Scorers (comma-separated)</label>
+            <p className="text-xs text-blue-600 mb-2">
+              💡 Tip: If a player scores multiple goals, enter their name multiple times (e.g., "Messi, Messi, Ronaldo" for 2 goals by Messi and 1 by Ronaldo)
+            </p>
             <input
               type="text"
               value={formData.goalScorers}
               onChange={(e) => setFormData({ ...formData, goalScorers: e.target.value })}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
-              placeholder="Messi, Ronaldo, Neymar"
+              placeholder="Messi, Messi, Ronaldo (if Messi scored 2 goals)"
             />
           </div>
         </div>

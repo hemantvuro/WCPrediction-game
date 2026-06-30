@@ -113,7 +113,15 @@
       "mcp__plugin_browser_browser__browser_navigate",
       "WebFetch(domain:pocketbase.io)",
       "mcp__plugin_browser_browser__browser_a11y_tree",
-      "Bash(curl -s \"https://api.github.com/search/repositories?q=world+cup+prediction+scoring+in:readme&sort=stars&order=desc\")"
+      "Bash(curl -s \"https://api.github.com/search/repositories?q=world+cup+prediction+scoring+in:readme&sort=stars&order=desc\")",
+      "WebFetch(domain:mfrxriowdeztndnvdrfr.supabase.co)",
+      "Bash(PORT=3002 npm run dev)",
+      "Bash(PORT=3003 npm run dev)",
+      "Bash(curl -X POST http://localhost:3003/api/users -H 'Content-Type: application/json' -d '{\"firstName\": \"LocalTest\", \"phoneNumber\": \"3333333333\"}' -w '\\\\nHTTP Status: %{http_code}\\\\n' -s)",
+      "Bash(pkill -f \"next dev\")",
+      "Bash(curl -X POST http://localhost:3003/api/users -H 'Content-Type: application/json' -d '{\"firstName\": \"LocalTest\", \"phoneNumber\": \"4444444444\"}' -w '\\\\nHTTP Status: %{http_code}\\\\n' -s)",
+      "Bash(curl -s http://localhost:3003/api/fixtures)",
+      "Bash(curl -s http://localhost:3003/api/leaderboard)"
     ]
   }
 }

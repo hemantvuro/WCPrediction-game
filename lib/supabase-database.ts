@@ -521,12 +521,15 @@ class SupabaseDatabase {
           }
         }
 
-        // Check goal scorers
+        // Check goal scorers - count multiple goals by same player
         if (pred.goalScorers && fixture.goalScorers && pred.goalScorers.length > 0) {
-          const matchingScorers = pred.goalScorers.filter(s =>
-            fixture.goalScorers!.includes(s)
-          ).length;
-          points += matchingScorers * rule.goalScorerPoints;
+          let scorerPoints = 0;
+          pred.goalScorers.forEach(predictedScorer => {
+            // Count how many times this predicted player actually scored
+            const goalsScored = fixture.goalScorers!.filter(s => s === predictedScorer).length;
+            scorerPoints += goalsScored * rule.goalScorerPoints;
+          });
+          points += scorerPoints;
         }
 
         totalPoints += points;
