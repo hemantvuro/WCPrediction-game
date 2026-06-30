@@ -1,25 +1,25 @@
 -- Run this SQL in Supabase SQL Editor to set Hemant as admin
 -- https://supabase.com/dashboard/project/YOUR_PROJECT/sql/new
 
--- Check current status
-SELECT id, first_name, phone_number, is_admin, points
+-- Step 1: Check current status - Find Hemant
+SELECT id, first_name, phone_number, is_admin, points, created_at
 FROM users
-WHERE first_name ILIKE 'hemant' OR phone_number = '7507057136';
+WHERE phone_number = '7507057136';
 
--- Update Hemant to admin (will update all matching rows)
+-- Step 2: Update ONLY the user with phone 7507057136 to admin
 UPDATE users
-SET
-  first_name = 'Hemant',
-  phone_number = '7507057136',
-  is_admin = true
-WHERE first_name ILIKE 'hemant' OR phone_number = '7507057136';
+SET is_admin = true
+WHERE phone_number = '7507057136';
 
--- Verify the update
+-- Step 3: Verify the update worked
 SELECT id, first_name, phone_number, is_admin, points
 FROM users
 WHERE phone_number = '7507057136';
 
--- Expected result:
--- id | first_name | phone_number | is_admin | points
--- ---|------------|--------------|----------|-------
--- XX | Hemant     | 7507057136   | true     | XX
+-- Expected result should show:
+-- is_admin = true (previously false)
+
+-- Optional: See all users and their admin status
+-- SELECT id, first_name, phone_number, is_admin, points
+-- FROM users
+-- ORDER BY created_at;
