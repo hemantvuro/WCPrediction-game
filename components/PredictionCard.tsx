@@ -9,6 +9,17 @@ interface PredictionCardProps {
   onPredict: (fixtureId: string, prediction: PredictionResult, scoreA?: number, scoreB?: number, goalScorers?: string[]) => Promise<void>;
 }
 
+interface FixtureStats {
+  total: number;
+  outcomes: {
+    teamA: number;
+    teamB: number;
+    draw: number;
+  };
+  scores: Array<{ scoreA: number; scoreB: number; count: number }>;
+  confidence: 'high' | 'medium' | 'low';
+}
+
 export default function PredictionCard({ fixture, existingPrediction, onPredict }: PredictionCardProps) {
   const [selectedOutcome, setSelectedOutcome] = useState<PredictionResult | null>(null);
   const [scoreA, setScoreA] = useState<string>('0');
@@ -17,6 +28,7 @@ export default function PredictionCard({ fixture, existingPrediction, onPredict 
   const [isExpired, setIsExpired] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
+  const [stats, setStats] = useState<FixtureStats | null>(null);
 
   const isGroupStage = fixture.stage === 'group';
   const enableMatchOutcome = fixture.enableMatchOutcome !== false;
@@ -29,6 +41,24 @@ export default function PredictionCard({ fixture, existingPrediction, onPredict 
       setScoreB(existingPrediction.scoreB?.toString() || '0');
     }
   }, [existingPrediction?.id, existingPrediction?.prediction, existingPrediction?.scoreA, existingPrediction?.scoreB]);
+
+  useEffect(() => {
+    if (!isExpired) {
+      fetchStats();
+      const interval = setInterval(fetchStats, 30000);
+      return () => clearInterval(interval);
+    }
+  }, [fixture.id, isExpired]);
+
+  const fetchStats = async () => {
+    try {
+      const response = await fetch(`/api/fixtures/${fixture.id}/stats`);
+      const data = await response.json();
+      setStats(data);
+    } catch (error) {
+      console.error('Failed to fetch stats:', error);
+    }
+  };
 
   useEffect(() => {
     const updateCountdown = () => {
@@ -119,10 +149,10 @@ export default function PredictionCard({ fixture, existingPrediction, onPredict 
   };
 
   return (
-    <div className="bg-white rounded-lg shadow border border-gray-200">
+    <div className="bg-white rounded-2xl shadow-lg border border-gray-200">
       {/* Header */}
-      <div className="p-3 border-b bg-gray-50">
-        <div className="text-xs text-gray-600 text-center">
+      <div className="p-4 border-b bg-gray-50">
+        <div className="text-sm text-gray-700 text-center font-medium">
           {formatDate(fixture.matchDate)}
         </div>
         <div className={`text-xs text-center mt-1 font-semibold ${
@@ -133,42 +163,46 @@ export default function PredictionCard({ fixture, existingPrediction, onPredict 
       </div>
 
       {/* Teams and Prediction */}
-      <div className="p-4">
-        <div className="flex items-center justify-between gap-3 mb-4">
+      <div className="p-4 md:p-6">
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3 mb-4 md:mb-6">
           <button
             onClick={() => !isExpired && setSelectedOutcome('teamA')}
             disabled={isExpired}
-            className={`flex-1 py-3 px-2 rounded border-2 font-semibold text-sm transition ${
+            className={`w-full sm:w-auto px-4 py-2.5 rounded-lg font-semibold text-sm transition shadow ${
               selectedOutcome === 'teamA'
-                ? 'bg-blue-500 text-white border-blue-600'
-                : 'bg-white text-gray-700 border-gray-300 hover:border-blue-400'
+                ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg'
+                : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200'
             } disabled:opacity-50`}
           >
-            <div className="text-xl mb-1">{fixture.teamAFlag}</div>
-            <div className="text-xs">{fixture.teamA}</div>
+            <div className="flex items-center justify-center gap-2">
+              <span className="text-xl">{fixture.teamAFlag}</span>
+              <span className="truncate">{fixture.teamA}</span>
+            </div>
           </button>
 
-          <div className="text-gray-400 font-bold">VS</div>
+          <div className="text-gray-400 font-bold text-xs">VS</div>
 
           <button
             onClick={() => !isExpired && setSelectedOutcome('teamB')}
             disabled={isExpired}
-            className={`flex-1 py-3 px-2 rounded border-2 font-semibold text-sm transition ${
+            className={`w-full sm:w-auto px-4 py-2.5 rounded-lg font-semibold text-sm transition shadow ${
               selectedOutcome === 'teamB'
-                ? 'bg-purple-500 text-white border-purple-600'
-                : 'bg-white text-gray-700 border-gray-300 hover:border-purple-400'
+                ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg'
+                : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200'
             } disabled:opacity-50`}
           >
-            <div className="text-xl mb-1">{fixture.teamBFlag}</div>
-            <div className="text-xs">{fixture.teamB}</div>
+            <div className="flex items-center justify-center gap-2">
+              <span className="text-xl">{fixture.teamBFlag}</span>
+              <span className="truncate">{fixture.teamB}</span>
+            </div>
           </button>
         </div>
 
         {/* Score Inputs */}
         {enableScorePrediction && (
-          <div className="flex items-center justify-center gap-3">
+          <div className="flex items-center justify-center gap-3 mb-4">
             <div>
-              <label className="block text-xs text-gray-600 mb-1">Score</label>
+              <label className="block text-xs text-gray-600 mb-1 text-center">Score</label>
               <input
                 type="number"
                 min="0"
@@ -176,12 +210,12 @@ export default function PredictionCard({ fixture, existingPrediction, onPredict 
                 value={scoreA}
                 onChange={(e) => setScoreA(e.target.value)}
                 disabled={isExpired}
-                className="w-14 px-2 py-1.5 border rounded text-center font-bold focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
+                className="w-16 px-2 py-2 border-2 border-gray-300 rounded-lg text-center font-bold focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100"
               />
             </div>
             <div className="mt-5 text-gray-400 font-bold">-</div>
             <div>
-              <label className="block text-xs text-gray-600 mb-1">Score</label>
+              <label className="block text-xs text-gray-600 mb-1 text-center">Score</label>
               <input
                 type="number"
                 min="0"
@@ -189,15 +223,13 @@ export default function PredictionCard({ fixture, existingPrediction, onPredict 
                 value={scoreB}
                 onChange={(e) => setScoreB(e.target.value)}
                 disabled={isExpired}
-                className="w-14 px-2 py-1.5 border rounded text-center font-bold focus:ring-2 focus:ring-purple-500 disabled:bg-gray-100"
+                className="w-16 px-2 py-2 border-2 border-gray-300 rounded-lg text-center font-bold focus:ring-2 focus:ring-purple-500 focus:border-purple-500 disabled:bg-gray-100"
               />
             </div>
           </div>
         )}
-      </div>
 
-      {/* Status Footer */}
-      <div className="px-4 pb-3">
+        {/* Status */}
         {existingPrediction && !isExpired && !saveError && (
           <div className="text-xs text-center text-green-600 font-semibold">
             {isSaving ? 'Saving...' : 'Saved'}
@@ -209,6 +241,56 @@ export default function PredictionCard({ fixture, existingPrediction, onPredict 
           </div>
         )}
       </div>
+
+      {/* Other Players' Predictions */}
+      {stats && stats.total > 0 && !isExpired && (
+        <div className="px-4 md:px-6 pb-4 md:pb-6">
+          <div className="p-3 md:p-4 bg-gray-50 rounded-xl border border-gray-200">
+            <div className="text-xs md:text-sm font-bold text-gray-700 mb-2 md:mb-3">
+              Other Players ({stats.total})
+            </div>
+
+            {/* Outcome Breakdown */}
+            {enableMatchOutcome && (
+              <div className="space-y-1.5 md:space-y-2 mb-2 md:mb-3">
+                {stats.outcomes.teamA > 0 && (
+                  <div className="flex justify-between items-center text-xs md:text-sm px-1 md:px-2 py-1">
+                    <span className="text-gray-700 truncate">{fixture.teamAFlag} {fixture.teamA}</span>
+                    <span className="font-bold text-blue-600 ml-2">{((stats.outcomes.teamA / stats.total) * 100).toFixed(0)}%</span>
+                  </div>
+                )}
+                {stats.outcomes.draw > 0 && (
+                  <div className="flex justify-between items-center text-xs md:text-sm px-1 md:px-2 py-1">
+                    <span className="text-gray-700">Draw</span>
+                    <span className="font-bold text-gray-600">{((stats.outcomes.draw / stats.total) * 100).toFixed(0)}%</span>
+                  </div>
+                )}
+                {stats.outcomes.teamB > 0 && (
+                  <div className="flex justify-between items-center text-xs md:text-sm px-1 md:px-2 py-1">
+                    <span className="text-gray-700 truncate">{fixture.teamBFlag} {fixture.teamB}</span>
+                    <span className="font-bold text-purple-600 ml-2">{((stats.outcomes.teamB / stats.total) * 100).toFixed(0)}%</span>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Popular Scores */}
+            {enableScorePrediction && stats.scores.length > 0 && (
+              <div>
+                <div className="text-xs md:text-sm font-semibold text-gray-600 mb-1.5 md:mb-2">Popular Scores</div>
+                <div className="flex flex-wrap gap-1.5 md:gap-2">
+                  {stats.scores.slice(0, 3).map((score, idx) => (
+                    <div key={idx} className="text-xs md:text-sm bg-white rounded-lg px-2 md:px-3 py-1 md:py-1.5 border border-gray-300">
+                      <span className="font-bold text-gray-800">{score.scoreA}-{score.scoreB}</span>
+                      <span className="text-gray-500 ml-1">({score.count})</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

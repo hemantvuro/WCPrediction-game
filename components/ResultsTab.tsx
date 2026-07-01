@@ -54,11 +54,11 @@ export default function ResultsTab({ fixtures, predictions }: ResultsTabProps) {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3 md:space-y-4">
       {/* Header */}
-      <div className="bg-gradient-to-br from-green-500 to-teal-500 rounded-2xl p-6 text-white shadow-xl">
-        <h2 className="text-2xl font-bold mb-2">Match Results</h2>
-        <p className="text-green-100">{completedFixtures.length} matches completed</p>
+      <div className="bg-gradient-to-br from-green-500 to-teal-500 rounded-2xl p-4 md:p-6 text-white shadow-xl">
+        <h2 className="text-xl md:text-2xl font-bold mb-1 md:mb-2">Match Results</h2>
+        <p className="text-sm md:text-base text-green-100">{completedFixtures.length} matches completed</p>
       </div>
 
       {/* Results List */}

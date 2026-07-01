@@ -236,15 +236,15 @@ Make your predictions now! 🎯`;
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="bg-gradient-to-r from-blue-600 via-cyan-500 to-blue-600 shadow-lg sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto px-4 py-3">
+        <div className="max-w-7xl mx-auto px-3 md:px-4 py-2.5 md:py-3">
           <div className="flex justify-between items-center">
             <div>
-              <h1 className="text-xl md:text-2xl font-bold text-white">FIFA World Cup 2026</h1>
+              <h1 className="text-base md:text-xl lg:text-2xl font-bold text-white">FIFA World Cup 2026</h1>
               <p className="text-white/90 text-xs">{currentUser.firstName} {isAdmin && '(Admin)'}</p>
             </div>
             <button
               onClick={handleLogout}
-              className="px-3 py-1.5 bg-white/20 backdrop-blur-sm text-white rounded-lg hover:bg-white/30 transition text-sm font-semibold"
+              className="px-2.5 md:px-3 py-1.5 bg-white/20 backdrop-blur-sm text-white rounded-lg hover:bg-white/30 transition text-xs md:text-sm font-semibold"
               title="Logout"
             >
               Logout
@@ -254,45 +254,45 @@ Make your predictions now! 🎯`;
 
         {/* Tab Navigation */}
         <div className="bg-white/10 backdrop-blur-sm border-t border-white/20">
-          <div className="max-w-7xl mx-auto px-4">
-            <div className="flex gap-1 overflow-x-auto">
+          <div className="max-w-7xl mx-auto px-3 md:px-4 py-2 md:py-3">
+            <div className="flex gap-1.5 md:gap-2 overflow-x-auto justify-center scrollbar-hide">
               <button
                 onClick={() => setActiveTab('dashboard')}
-                className={`px-4 py-3 font-semibold text-sm whitespace-nowrap transition border-b-2 ${
+                className={`px-3 md:px-6 py-2 md:py-2.5 font-semibold text-xs md:text-sm whitespace-nowrap transition rounded-lg ${
                   activeTab === 'dashboard'
-                    ? 'text-white border-white'
-                    : 'text-white/70 border-transparent hover:text-white hover:border-white/50'
+                    ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg'
+                    : 'bg-white text-gray-700 hover:bg-gray-50 shadow'
                 }`}
               >
-                Dashboard
+                Match Prediction
               </button>
               <button
                 onClick={() => setActiveTab('leaderboard')}
-                className={`px-4 py-3 font-semibold text-sm whitespace-nowrap transition border-b-2 ${
+                className={`px-3 md:px-6 py-2 md:py-2.5 font-semibold text-xs md:text-sm whitespace-nowrap transition rounded-lg ${
                   activeTab === 'leaderboard'
-                    ? 'text-white border-white'
-                    : 'text-white/70 border-transparent hover:text-white hover:border-white/50'
+                    ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg'
+                    : 'bg-white text-gray-700 hover:bg-gray-50 shadow'
                 }`}
               >
                 Leaderboard
               </button>
               <button
                 onClick={() => setActiveTab('results')}
-                className={`px-4 py-3 font-semibold text-sm whitespace-nowrap transition border-b-2 ${
+                className={`px-3 md:px-6 py-2 md:py-2.5 font-semibold text-xs md:text-sm whitespace-nowrap transition rounded-lg ${
                   activeTab === 'results'
-                    ? 'text-white border-white'
-                    : 'text-white/70 border-transparent hover:text-white hover:border-white/50'
+                    ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg'
+                    : 'bg-white text-gray-700 hover:bg-gray-50 shadow'
                 }`}
               >
-                Results
+                All Fixtures
               </button>
               {isAdmin && (
                 <button
                   onClick={() => setActiveTab('admin')}
-                  className={`px-4 py-3 font-semibold text-sm whitespace-nowrap transition border-b-2 ${
+                  className={`px-3 md:px-6 py-2 md:py-2.5 font-semibold text-xs md:text-sm whitespace-nowrap transition rounded-lg ${
                     activeTab === 'admin'
-                      ? 'text-white border-white'
-                      : 'text-white/70 border-transparent hover:text-white hover:border-white/50'
+                      ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg'
+                      : 'bg-white text-gray-700 hover:bg-gray-50 shadow'
                   }`}
                 >
                   Admin
@@ -304,7 +304,7 @@ Make your predictions now! 🎯`;
       </header>
 
       {/* Content Area */}
-      <div className="max-w-7xl mx-auto px-4 py-6">
+      <div className="max-w-7xl mx-auto px-3 md:px-4 py-4 md:py-6">
         {/* Dashboard Tab */}
         {activeTab === 'dashboard' && (
           <DashboardTab
@@ -312,6 +312,7 @@ Make your predictions now! 🎯`;
             predictions={predictions}
             userStats={userStats}
             totalFixtures={completedFixturesCount}
+            leaderboard={leaderboard}
             onPredict={handlePredict}
           />
         )}
@@ -320,20 +321,20 @@ Make your predictions now! 🎯`;
         {activeTab === 'leaderboard' && (
           <>
             {isAdmin && (
-              <div className="mb-4 flex justify-end gap-3 flex-wrap">
+              <div className="mb-4 flex justify-end gap-2 md:gap-3 flex-wrap">
                 <button
                   onClick={() => {
                     const recap = generateWeeklyRecap(leaderboard);
                     navigator.clipboard.writeText(recap);
                     alert('Weekly recap copied!');
                   }}
-                  className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition font-semibold"
+                  className="px-3 md:px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition font-semibold text-xs md:text-sm"
                 >
                   Weekly Recap
                 </button>
                 <button
                   onClick={copyLeaderboard}
-                  className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-semibold"
+                  className="px-3 md:px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-semibold text-xs md:text-sm"
                 >
                   Copy Leaderboard
                 </button>
@@ -350,34 +351,34 @@ Make your predictions now! 🎯`;
 
         {/* Admin Tab */}
         {activeTab === 'admin' && isAdmin && (
-          <div className="grid md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
             <a
               href="/admin/fixtures"
-              className="block p-6 bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition shadow-lg"
+              className="block p-4 md:p-6 bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition shadow-lg"
             >
-              <div className="font-bold text-xl mb-1">Fixture Management</div>
-              <div className="text-sm text-blue-100">Create, edit, and manage matches</div>
+              <div className="font-bold text-lg md:text-xl mb-1">Fixture Management</div>
+              <div className="text-xs md:text-sm text-blue-100">Create, edit, and manage matches</div>
             </a>
             <a
               href="/admin/participants"
-              className="block p-6 bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-lg hover:from-purple-600 hover:to-purple-700 transition shadow-lg"
+              className="block p-4 md:p-6 bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-lg hover:from-purple-600 hover:to-purple-700 transition shadow-lg"
             >
-              <div className="font-bold text-xl mb-1">Participants</div>
-              <div className="text-sm text-purple-100">Manage all users</div>
+              <div className="font-bold text-lg md:text-xl mb-1">Participants</div>
+              <div className="text-xs md:text-sm text-purple-100">Manage all users</div>
             </a>
             <a
               href="/admin/player-predictions"
-              className="block p-6 bg-gradient-to-br from-green-500 to-teal-600 text-white rounded-lg hover:from-green-600 hover:to-teal-700 transition shadow-lg"
+              className="block p-4 md:p-6 bg-gradient-to-br from-green-500 to-teal-600 text-white rounded-lg hover:from-green-600 hover:to-teal-700 transition shadow-lg"
             >
-              <div className="font-bold text-xl mb-1">Player Predictions</div>
-              <div className="text-sm text-green-100">View prediction history</div>
+              <div className="font-bold text-lg md:text-xl mb-1">Player Predictions</div>
+              <div className="text-xs md:text-sm text-green-100">View prediction history</div>
             </a>
             <a
               href="/admin/rules"
-              className="block p-6 bg-gradient-to-br from-orange-500 to-red-600 text-white rounded-lg hover:from-orange-600 hover:to-red-700 transition shadow-lg"
+              className="block p-4 md:p-6 bg-gradient-to-br from-orange-500 to-red-600 text-white rounded-lg hover:from-orange-600 hover:to-red-700 transition shadow-lg"
             >
-              <div className="font-bold text-xl mb-1">Points Rules</div>
-              <div className="text-sm text-orange-100">Configure scoring system</div>
+              <div className="font-bold text-lg md:text-xl mb-1">Points Rules</div>
+              <div className="text-xs md:text-sm text-orange-100">Configure scoring system</div>
             </a>
           </div>
         )}

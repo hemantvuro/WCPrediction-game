@@ -33,15 +33,15 @@ export default function Leaderboard({ entries, onExport, onRefresh, lastUpdated 
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3 md:space-y-4">
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-bold text-gray-800">Leaderboard</h2>
+          <h2 className="text-lg md:text-2xl font-bold text-gray-800">Leaderboard</h2>
         </div>
         {onExport && (
           <button
             onClick={onExport}
-            className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-sm font-medium"
+            className="px-3 md:px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-xs md:text-sm font-medium"
           >
             Export
           </button>
@@ -50,29 +50,29 @@ export default function Leaderboard({ entries, onExport, onRefresh, lastUpdated 
 
       <div className="space-y-2">
         {entries.length === 0 ? (
-          <div className="bg-white rounded-lg p-8 text-center text-gray-500">
+          <div className="bg-white rounded-lg p-6 md:p-8 text-center text-sm md:text-base text-gray-500">
             No predictions yet. Start predicting to see the leaderboard!
           </div>
         ) : (
           entries.map((entry) => (
             <div
               key={entry.userId}
-              className={`border-2 rounded-lg p-4 flex items-center gap-4 ${getRankColor(entry.rank)}`}
+              className={`border-2 rounded-lg p-3 md:p-4 flex items-center gap-2 md:gap-4 ${getRankColor(entry.rank)}`}
             >
-              <div className="flex items-center gap-2 min-w-[60px]">
-                <div className="text-2xl font-bold">
+              <div className="flex items-center gap-1.5 md:gap-2 min-w-[50px] md:min-w-[60px]">
+                <div className="text-xl md:text-2xl font-bold">
                   {entry.rank}
                 </div>
                 {getMovementIcon(entry)}
               </div>
 
-              <div className="flex-1">
-                <div className="font-semibold text-lg">{entry.userName}</div>
+              <div className="flex-1 min-w-0">
+                <div className="font-semibold text-base md:text-lg truncate">{entry.userName}</div>
                 {entry.pointsChange > 0 && (
-                  <div className="text-sm text-green-600">+{entry.pointsChange} pts</div>
+                  <div className="text-xs md:text-sm text-green-600">+{entry.pointsChange} pts</div>
                 )}
                 {/* Badges */}
-                <div className="flex flex-wrap gap-1 mt-2">
+                <div className="flex flex-wrap gap-1 mt-1 md:mt-2">
                   {getBadges({
                     rank: entry.rank,
                     totalPoints: entry.totalPoints,
@@ -82,18 +82,18 @@ export default function Leaderboard({ entries, onExport, onRefresh, lastUpdated 
                   }).map((badge) => (
                     <span
                       key={badge.id}
-                      className={`${badge.color} text-white text-xs px-2 py-1 rounded-full font-semibold flex items-center gap-1`}
+                      className={`${badge.color} text-white text-xs px-2 py-0.5 md:py-1 rounded-full font-semibold flex items-center gap-1`}
                       title={badge.description}
                     >
-                      <span>{badge.emoji}</span>
+                      <span className="hidden md:inline">{badge.emoji}</span>
                       <span>{badge.name}</span>
                     </span>
                   ))}
                 </div>
               </div>
 
-              <div className="text-right">
-                <div className="text-2xl font-bold">{entry.totalPoints}</div>
+              <div className="text-right flex-shrink-0">
+                <div className="text-xl md:text-2xl font-bold">{entry.totalPoints}</div>
                 <div className="text-xs text-gray-500">points</div>
               </div>
             </div>
