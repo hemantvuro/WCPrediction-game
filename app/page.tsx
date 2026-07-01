@@ -5,21 +5,19 @@ import EnrollmentForm from '@/components/EnrollmentForm';
 import PredictionCard from '@/components/PredictionCard';
 import FixtureCard from '@/components/FixtureCard';
 import Leaderboard from '@/components/Leaderboard';
+import BottomNav, { TabType } from '@/components/BottomNav';
+import StatsTab from '@/components/StatsTab';
+import ResultsTab from '@/components/ResultsTab';
 import { User, Fixture, Prediction, LeaderboardEntry, PredictionResult } from '@/types';
 import { generateWeeklyRecap } from '@/lib/weeklyRecap';
-
-type Tab = 'upcoming' | 'all' | 'leaderboard' | 'admin';
 
 export default function Home() {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [fixtures, setFixtures] = useState<Fixture[]>([]);
   const [predictions, setPredictions] = useState<Prediction[]>([]);
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
-  const [activeTab, setActiveTab] = useState<Tab>('upcoming');
+  const [activeTab, setActiveTab] = useState<TabType>('predict');
   const [isLoading, setIsLoading] = useState(true);
-  const [completedExpanded, setCompletedExpanded] = useState(false);
-  const [openExpanded, setOpenExpanded] = useState(true);
-  const [lockedExpanded, setLockedExpanded] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [leaderboardLastUpdated, setLeaderboardLastUpdated] = useState<Date | null>(null);
 
@@ -316,9 +314,13 @@ Make your predictions now! 🎯`;
     }
   };
 
+  // Get user's stats for Stats tab
+  const userStats = leaderboard.find(entry => entry.userId === currentUser.id) || null;
+  const completedFixturesCount = fixtures.filter(f => f.status === 'completed').length;
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="fifa-gradient shadow-lg">
+    <div className="min-h-screen bg-gray-50 pb-20">
+      <header className="bg-gradient-to-r from-blue-600 via-cyan-500 to-blue-600 shadow-lg">
         <div className="max-w-7xl mx-auto px-4 py-6">
           <div className="flex justify-between items-center">
             <div>
@@ -339,52 +341,7 @@ Make your predictions now! 🎯`;
       </header>
 
       <div className="max-w-7xl mx-auto px-4 py-6">
-        <div className="mb-8 flex justify-center gap-4">
-          <button
-            onClick={() => setActiveTab('upcoming')}
-            className={`px-8 py-3 rounded-lg font-semibold transition-all ${
-              activeTab === 'upcoming'
-                ? 'fifa-gradient text-white shadow-lg'
-                : 'bg-white text-gray-700 hover:bg-gray-50 border-2 border-gray-200'
-            }`}
-          >
-            Match Prediction
-          </button>
-          <button
-            onClick={() => setActiveTab('all')}
-            className={`px-8 py-3 rounded-lg font-semibold transition-all ${
-              activeTab === 'all'
-                ? 'fifa-gradient text-white shadow-lg'
-                : 'bg-white text-gray-700 hover:bg-gray-50 border-2 border-gray-200'
-            }`}
-          >
-            All Fixtures
-          </button>
-          <button
-            onClick={() => setActiveTab('leaderboard')}
-            className={`px-8 py-3 rounded-lg font-semibold transition-all ${
-              activeTab === 'leaderboard'
-                ? 'fifa-gradient text-white shadow-lg'
-                : 'bg-white text-gray-700 hover:bg-gray-50 border-2 border-gray-200'
-            }`}
-          >
-            Leaderboard
-          </button>
-          {isAdmin && (
-            <button
-              onClick={() => setActiveTab('admin')}
-              className={`px-8 py-3 rounded-lg font-semibold transition-all ${
-                activeTab === 'admin'
-                  ? 'fifa-gradient text-white shadow-lg'
-                  : 'bg-white text-gray-700 hover:bg-gray-50 border-2 border-gray-200'
-              }`}
-            >
-              Admin
-            </button>
-          )}
-        </div>
-
-        {activeTab === 'upcoming' && (
+        {activeTab === 'predict' && (
           <>
             {isAdmin && openFixtures.length === 0 && (
               <div className="mb-4 p-4 bg-yellow-50 border-l-4 border-yellow-500 rounded">
