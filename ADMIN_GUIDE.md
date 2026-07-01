@@ -1,300 +1,137 @@
-# Admin Guide - FIFA 2026 Prediction Game
+# Admin Guide - FIFA World Cup 2026 Prediction Game
 
-## Overview
-Complete admin-controlled prediction game system. All fixtures, teams, and participants are managed by admin.
+## Creating & Editing Fixtures
 
-## Admin Dashboard
-Access: **http://localhost:3000/admin**
+### NEW: Stage Selection (Critical for Points!)
 
-### Quick Actions
+When creating or editing a fixture, you MUST select the **Tournament Stage**. This determines how many points users earn:
 
-1. **🏴 Manage Teams** (`/admin/teams`)
-   - Add new teams with names and flag emojis
-   - Edit existing teams
-   - Delete teams
-   - Emoji picker: Windows + . or Mac Ctrl + Cmd + Space
+**Stage Options:**
+- Group Stage (2 pts result + 2 pts score = 4 max)
+- Round of 32 (3 pts result + 3 pts score = 6 max)
+- Round of 16 (4 pts result + 4 pts score = 8 max)
+- Quarter Finals (5 pts result + 5 pts score = 10 max)
+- Semi Finals (6 pts result + 6 pts score = 12 max)
+- Third Place (6 pts result + 6 pts score = 12 max)
+- Final (10 pts result + 10 pts score = 20 max)
 
-2. **⚽ Manage Fixtures** (`/admin/fixtures`)
-   - Create fixtures by selecting teams from dropdown
-   - Auto-calculated status based on match date/time
-   - Edit/delete fixtures
-   - Copy today's matches for WhatsApp
+### Creating a New Fixture:
 
-3. **👥 Manage Participants** (`/admin/participants`)
-   - View all enrolled users
-   - Edit user details (name, phone)
-   - Manually override points for any user
-   - Remove participants
+1. Go to **Admin → Fixture Management**
+2. Click **"➕ Create Fixture"**
+3. Fill in ALL required fields:
+   - Team A (dropdown)
+   - Team B (dropdown)
+   - Match Date & Time
+   - **Tournament Stage** ⭐ (select carefully!)
+   - Group (optional, only for group stage)
+   - Status (Locked/Open/Completed)
+4. Click **Save**
+5. Fixture appears immediately in database
 
-4. **🏆 Copy Leaderboard**
-   - One-click copy formatted leaderboard
-   - Paste directly to WhatsApp group
+✅ All functions work automatically (predictions, leaderboard, stats)
 
-5. **📊 Match Results**
-   - Quick update match status and scores
-   - Mark matches as completed
-   - Enter final scores and results
+### Editing an Existing Fixture:
 
-6. **🎯 Points Rules**
-   - Adjust points for each stage
-   - Result points, Score points, Goal scorer points
+1. Find the fixture in Fixture Management
+2. Click **"✏️ Edit"**
+3. Modify any field including **Stage**
+4. Click **Save**
+5. Changes apply immediately
 
----
+**Common Edit: Fixing Stage**
+- If points seem wrong, check the stage
+- Edit fixture → Change stage dropdown → Save
+- Points recalculate on next leaderboard load
 
-## How to Set Up the Tournament
+### Entering Match Results:
 
-### Step 1: Teams (Pre-loaded)
-48 FIFA 2026 teams are already loaded. You can:
-- Add more teams if needed
-- Edit team names or flags
-- Delete unused teams
-
-### Step 2: Create Fixtures
-Go to `/admin/fixtures` and click **"+ Create Fixture"**
-
-**Required fields:**
-- **Team A**: Select from dropdown
-- **Team B**: Select from dropdown
-- **Stage**: Group Stage / Round of 32 / Round of 16 / Quarter / Semi / Third Place / Final
-- **Group**: (Only for Group Stage) - A, B, C, etc.
-- **Match Date & Time**: Set in local time (IST)
-
-**Auto-calculated:**
-- **Status**: Automatically set based on date/time
-  - **Open**: More than 2 hours before match (users can predict)
-  - **Locked**: Within 2 hours of match (no predictions)
-  - **Completed**: Match finished (set by admin when entering results)
-
-### Step 3: Status Rules
-Status changes automatically based on match time:
-
-| Time Before Match | Status | Predictions Allowed |
-|-------------------|--------|---------------------|
-| > 2 hours | Open | ✅ Yes |
-| < 2 hours | Locked | ❌ No |
-| After match | Locked/Completed | ❌ No |
-
-### Step 4: Share Today's Matches
-From `/admin/fixtures`, click **"Copy Today's Matches"**
-- Copies all matches scheduled for today
-- Formatted for WhatsApp
-- Includes time in IST
-
-Example output:
-```
-⚽ TODAY'S MATCHES - 29/06/2026
-
-1. 🇲🇽 Mexico vs 🇳🇴 Norway - 02:30 AM
-2. 🏴 England vs 🇺🇸 USA - 11:30 PM
-
-Make your predictions now!
-```
-
-### Step 5: Update Results
-Two ways to update:
-
-**Method 1: Quick Update (Admin Dashboard)**
-1. Go to `/admin`
-2. Scroll to "Match Results"
-3. Click on any fixture
-4. Select:
-   - Status: Completed
-   - Result: Team A Won / Draw / Team B Won
-   - Scores: Enter final score
-
-**Method 2: Full Edit (Fixtures Management)**
-1. Go to `/admin/fixtures`
-2. Click "Edit" on the fixture
-3. Update all details including goal scorers
-
-### Step 6: Share Leaderboard
-From `/admin`, click **"Copy Leaderboard"**
-- Formatted with emojis and movement arrows
-- Shows points changes
-- Paste to WhatsApp
-
-Example output:
-```
-🏆 LEADERBOARD - FIFA 2026 🏆
-29/06/2026
-
-1. → 🥇 Harsha - 12 pts (+4)
-2. ↑ 🥈 Rahul - 10 pts (+2)
-3. ↓ 🥉 Priya - 8 pts
-```
+1. Edit the completed fixture
+2. Change status to **"Completed"**
+3. Enter **Score A** and **Score B**
+4. Select **Result** (Team A Won / Draw / Team B Won)
+5. Save
+6. Points calculate automatically
 
 ---
 
-## Managing Participants
+## Copy Matches Button
 
-### View All Participants
-- Go to `/admin/participants`
-- See all enrolled users with join date
+**Location:** Admin tab (top button)
 
-### Edit Participant
-Click "Edit" to modify:
-- First Name
-- Phone Number
-- **Manual Points Override**: Set custom points (overrides calculated points)
+**Purpose:** Share match updates via WhatsApp/social media
 
-### Remove Participant
-Click "Remove" to delete a user from the game
+**Click to copy formatted text with:**
+- Recent results + prediction accuracy
+- Upcoming matches + prediction counts
+- App link
 
-### Manual Points Override
-Use this to:
-- Adjust points for disputes
-- Bonus points for special achievements
-- Penalty points if needed
-- When set, calculated points are ignored
+**Sample Output:**
+```
+⚽ FIFA World Cup 2026 - Match Updates
+📅 1 Jul, 2026
+
+✅ RECENT RESULTS
+🇲🇽 Mexico 2 - 0 Ecuador 🇪🇨
+   75% predicted correctly
+
+🔜 UPCOMING MATCHES
+🏴󠁧󠁢󠁥󠁮󠁧󠁿 England vs DR Congo 🇨🇩
+   📍 1 Jul, 04:00 pm
+```
 
 ---
 
 ## Points System
 
-### Default Points Rules
+### How It Works:
+1. Admin creates fixture with **correct stage**
+2. Users make predictions
+3. Admin enters result when match completes
+4. Points calculate automatically on leaderboard load
 
-| Stage | Result | Score | Goal Scorers |
-|-------|--------|-------|--------------|
-| Group Stage | 2 pts | 2 pts | 0 pts |
-| Round of 32 | 2 pts | 2 pts | 0 pts |
-| Round of 16 | 2 pts | 2 pts | 0 pts |
-| Quarter Finals | 2 pts | 2 pts | 0 pts |
-| Semi Finals | 2 pts | 2 pts | 1 pt each |
-| Third Place | 2 pts | 2 pts | 1 pt each |
-| Final | 2 pts | 2 pts | 1 pt each |
+### Point Values by Stage:
 
-### How Points are Calculated
-1. **Result Points**: Correct winner (or draw for group stage)
-2. **Score Points**: Exact score match (e.g., 2-1)
-3. **Goal Scorers**: Correct goal scorer names (Semi finals onwards)
+| Stage | Correct Outcome | Exact Score | Max |
+|-------|----------------|-------------|-----|
+| Group | 2 | +2 | 4 |
+| R32 | 3 | +3 | 6 |
+| R16 | 4 | +4 | 8 |
+| Quarter | 5 | +5 | 10 |
+| Semi | 6 | +6 | 12 |
+| Final | 10 | +10 | 20 |
 
-### Edit Points Rules
-1. Go to `/admin`
-2. Click "Edit Points" button
-3. Change values for any stage
-4. Changes apply to all future calculations
-
----
-
-## Initial Setup (Done)
-
-✅ All fixtures cleared - admin creates them
-✅ 48 teams pre-loaded with flags
-✅ Round of 32 stage added
-✅ Auto-status calculation enabled
-✅ Admin-only leaderboard export
-✅ Admin-only today's matches export
+### If Points Are Wrong:
+1. Check fixture's stage setting
+2. Edit fixture → Correct the stage → Save
+3. Leaderboard recalculates automatically
 
 ---
 
-## Common Workflows
+## Quick Troubleshooting
 
-### Daily Routine
-1. Morning: Copy today's matches → Share to WhatsApp
-2. Throughout day: Users make predictions
-3. After matches: Update results in admin dashboard
-4. Evening: Copy leaderboard → Share to WhatsApp
+**Problem: New fixture not appearing**
+→ Refresh page
 
-### Creating All Group Stage Matches
-For each group (A-L):
-1. Go to `/admin/fixtures`
-2. Create 6 matches per group (4 teams = 6 combinations)
-3. Set stage: "Group Stage"
-4. Set group letter: A, B, C, etc.
-5. Set dates according to FIFA schedule
+**Problem: Users can't predict**
+→ Check status is "Open" (not "Locked")
 
-### Creating Knockout Rounds
-1. After group stage completes
-2. Create Round of 32 matches
-3. Select qualified teams from dropdowns
-4. Dates typically 2-3 days after group stage
-5. No group field needed (leave empty)
+**Problem: Wrong points awarded**
+→ Check fixture stage, edit if needed
+
+**Problem: Points didn't update**
+→ Ensure status = "Completed", scores entered
 
 ---
 
-## User Features (Not Admin-Controlled)
+## Important Reminders
 
-Users can:
-- Enroll themselves (first name + phone only)
-- Make predictions on open matches
-- View all fixtures
-- View leaderboard
-
-Users cannot:
-- Create/edit fixtures
-- Edit other users
-- Export leaderboard
-- See admin dashboard
+✅ **Always select correct stage** - Can't be guessed, must be set manually  
+✅ Stage determines point values - Group = 2 pts, Final = 10 pts  
+✅ Points calculate automatically - No manual intervention  
+✅ Edit stage anytime - Changes apply on next leaderboard load  
+✅ Test with sample fixture before tournament starts
 
 ---
 
-## Technical Notes
-
-### Fixture Status Logic
-```
-if match is in past:
-  if result entered: status = "completed"
-  else: status = "locked"
-else if match within 2 hours:
-  status = "locked"
-else:
-  status = "open"
-```
-
-### Points Calculation Priority
-- Manual points override (if set by admin)
-- Else: Calculated from predictions
-
-### Data Persistence
-Currently using **in-memory database**
-- Resets when server restarts
-- Upgrade to Supabase/PostgreSQL for production
-
----
-
-## Troubleshooting
-
-### "No fixtures available"
-- Admin needs to create fixtures first
-- Go to `/admin/fixtures` and create matches
-
-### "Status not changing"
-- Status auto-updates based on match date/time
-- Check system time is correct
-- Refresh the page
-
-### "Leaderboard shows 0 points"
-- Make sure match results are entered
-- Status must be "Completed"
-- Result field must be set
-
-### "Users can't predict"
-- Check fixture status is "Open"
-- If match is within 2 hours, it's locked automatically
-- Change match date to future time if testing
-
----
-
-## Production Checklist
-
-Before going live:
-- [ ] Set up actual database (Supabase/PostgreSQL)
-- [ ] Create all group stage fixtures
-- [ ] Test one complete fixture cycle (create → predict → complete → leaderboard)
-- [ ] Share enrollment link with users
-- [ ] Set up backup system
-- [ ] Document your WhatsApp sharing schedule
-
----
-
-## Support
-
-For questions or issues:
-1. Check this guide first
-2. Try refreshing the page
-3. Check browser console for errors
-4. Restart the dev server
-
----
-
-**Happy Predicting! ⚽🏆**
+For detailed points breakdown, see [POINTS_SYSTEM.md](./POINTS_SYSTEM.md)
