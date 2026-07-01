@@ -12,10 +12,13 @@ interface LeaderboardProps {
 }
 
 export default function Leaderboard({ entries, onExport, onRefresh, lastUpdated }: LeaderboardProps) {
-  // Filter out test users
-  const filteredEntries = entries.filter(
-    entry => !['test', 'germanjit'].includes(entry.userName.toLowerCase())
-  );
+  // Filter out test users and recalculate ranks
+  const filteredEntries = entries
+    .filter(entry => !['test', 'germanjit'].includes(entry.userName.toLowerCase()))
+    .map((entry, index) => ({
+      ...entry,
+      rank: index + 1, // Recalculate rank starting from 1
+    }));
 
   const getMovementIcon = (entry: LeaderboardEntry) => {
     if (!entry.previousRank) {
