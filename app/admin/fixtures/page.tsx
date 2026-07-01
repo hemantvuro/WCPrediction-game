@@ -13,9 +13,7 @@ export default function FixturesManagement() {
   const [completedExpanded, setCompletedExpanded] = useState(false);
   const [openExpanded, setOpenExpanded] = useState(true);
   const [lockedExpanded, setLockedExpanded] = useState(false);
-  const [isSyncing, setIsSyncing] = useState(false);
-  const [isInitializingTeams, setIsInitializingTeams] = useState(false);
-  const [isAutoUpdating, setIsAutoUpdating] = useState(false);
+  const [dateFilter, setDateFilter] = useState('');
 
   useEffect(() => {
     loadData();
@@ -51,37 +49,6 @@ export default function FixturesManagement() {
     }
   };
 
-  const copyTodaysMatches = () => {
-    const now = new Date();
-    const today = now.toISOString().split('T')[0];
-
-    const todaysFixtures = fixtures.filter(f => {
-      const fixtureDate = new Date(f.matchDate).toISOString().split('T')[0];
-      return fixtureDate === today;
-    });
-
-    if (todaysFixtures.length === 0) {
-      alert('No matches scheduled for today');
-      return;
-    }
-
-    const text = todaysFixtures
-      .map((f, idx) => {
-        const time = new Date(f.matchDate).toLocaleTimeString('en-IN', {
-          timeZone: 'Asia/Kolkata',
-          hour: '2-digit',
-          minute: '2-digit',
-          hour12: true,
-        });
-        return `${idx + 1}. ${f.teamAFlag} ${f.teamA} vs ${f.teamBFlag} ${f.teamB} - ${time}`;
-      })
-      .join('\n');
-
-    const fullText = `⚽ TODAY'S MATCHES - ${new Date().toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata' })}\n\n${text}\n\nMake your predictions now!`;
-
-    navigator.clipboard.writeText(fullText);
-    alert('Today\'s matches copied to clipboard!');
-  };
 
   const handleEdit = (fixture: Fixture) => {
     console.log('=== EDITING FIXTURE ===');
@@ -186,95 +153,21 @@ export default function FixturesManagement() {
     }
   };
 
-  const handleInitTeams = async () => {
-    if (!confirm('This will initialize all 48 World Cup 2026 teams in the database. Continue?')) {
-      return;
-    }
 
-    setIsInitializingTeams(true);
-    try {
-      const response = await fetch('/api/admin/init-teams', {
-        method: 'POST',
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        alert(`✅ ${data.message}`);
-        await loadTeams(); // Reload teams
-      } else {
-        alert(`❌ Failed to initialize teams:\n${data.message || data.error}`);
-      }
-    } catch (error: any) {
-      console.error('Failed to initialize teams:', error);
-      alert(`❌ Failed to initialize teams:\n${error.message || String(error)}`);
-    } finally {
-      setIsInitializingTeams(false);
-    }
-  };
-
-  const handleAutoUpdate = async () => {
-    if (!confirm('This will automatically set fixture statuses based on match dates:\n\n- Tomorrow\'s matches (before 1PM) → OPEN\n- Past matches → COMPLETED\n- Future matches → LOCKED (Upcoming)\n\nContinue?')) {
-      return;
-    }
-
-    setIsAutoUpdating(true);
-    try {
-      const response = await fetch('/api/admin/auto-update-fixtures', {
-        method: 'POST',
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        alert(`✅ ${data.message}\n\nOpen: ${data.updates.openCount}\nCompleted: ${data.updates.completedCount}\nUpcoming: ${data.updates.upcomingCount}`);
-        await loadFixtures();
-      } else {
-        alert(`❌ Failed to auto-update:\n${data.message || data.error}`);
-      }
-    } catch (error: any) {
-      console.error('Failed to auto-update fixtures:', error);
-      alert(`❌ Failed to auto-update:\n${error.message || String(error)}`);
-    } finally {
-      setIsAutoUpdating(false);
-    }
-  };
-
-  const handleSyncFixtures = async () => {
-    if (!confirm('This will import fixtures from Football-Data.org API. Continue?')) {
-      return;
-    }
-
-    setIsSyncing(true);
-    try {
-      const response = await fetch('/api/admin/sync-fixtures', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ competitionId: 2000 }), // World Cup 2022
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        alert(`✅ ${data.message}\n\nFixtures synced successfully!`);
-        loadFixtures();
-      } else {
-        alert(`❌ Failed to sync fixtures:\n${data.message || data.error}`);
-      }
-    } catch (error: any) {
-      console.error('Failed to sync fixtures:', error);
-      alert(`❌ Failed to sync fixtures:\n${error.message || String(error)}`);
-    } finally {
-      setIsSyncing(false);
-    }
-  };
+  // Filter fixtures by date if filter is set
+  const filteredFixtures = dateFilter
+    ? fixtures.filter(f => {
+        const fixtureDate = new Date(f.matchDate).toISOString().split('T')[0];
+        return fixtureDate === dateFilter;
+      })
+    : fixtures;
 
   // Separate fixtures by status
-  const completedFixtures = fixtures.filter((f) => f.status === 'completed')
+  const completedFixtures = filteredFixtures.filter((f) => f.status === 'completed')
     .sort((a, b) => new Date(b.matchDate).getTime() - new Date(a.matchDate).getTime());
-  const openFixtures = fixtures.filter((f) => f.status === 'open')
+  const openFixtures = filteredFixtures.filter((f) => f.status === 'open')
     .sort((a, b) => new Date(a.matchDate).getTime() - new Date(b.matchDate).getTime());
-  const lockedFixtures = fixtures.filter((f) => f.status === 'locked')
+  const lockedFixtures = filteredFixtures.filter((f) => f.status === 'locked')
     .sort((a, b) => new Date(a.matchDate).getTime() - new Date(b.matchDate).getTime());
 
   if (isLoading) {
@@ -291,27 +184,24 @@ export default function FixturesManagement() {
         <div className="max-w-7xl mx-auto px-4 py-6">
           <div className="flex justify-between items-center">
             <h1 className="text-3xl font-bold text-white">Fixtures Management</h1>
-            <div className="flex gap-2">
-              <button
-                onClick={handleAutoUpdate}
-                disabled={isAutoUpdating}
-                className="px-4 py-2 bg-green-400 text-white rounded-lg hover:bg-green-500 transition font-semibold shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {isAutoUpdating ? '⏳ Updating...' : '🤖 Auto-Update Status'}
-              </button>
-              <button
-                onClick={handleSyncFixtures}
-                disabled={isSyncing}
-                className="px-4 py-2 bg-purple-400 text-white rounded-lg hover:bg-purple-500 transition font-semibold shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {isSyncing ? '⏳ Syncing...' : '🔄 Sync from API'}
-              </button>
-              <button
-                onClick={copyTodaysMatches}
-                className="px-4 py-2 bg-green-400 text-white rounded-lg hover:bg-green-500 transition font-semibold shadow-sm"
-              >
-                📋 Copy Today's Matches
-              </button>
+            <div className="flex gap-2 items-center">
+              <div className="flex items-center gap-2">
+                <label className="text-white font-semibold">Filter by Date:</label>
+                <input
+                  type="date"
+                  value={dateFilter}
+                  onChange={(e) => setDateFilter(e.target.value)}
+                  className="px-3 py-2 rounded-lg border-2 border-white/30 bg-white/90 text-gray-800 font-semibold"
+                />
+                {dateFilter && (
+                  <button
+                    onClick={() => setDateFilter('')}
+                    className="px-3 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition font-semibold"
+                  >
+                    ✕ Clear
+                  </button>
+                )}
+              </div>
               <button
                 onClick={() => {
                   setShowCreateForm(true);
