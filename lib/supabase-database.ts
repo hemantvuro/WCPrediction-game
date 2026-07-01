@@ -334,6 +334,7 @@ class SupabaseDatabase {
       .select('*')
       .eq('user_id', userId)
       .eq('fixture_id', fixtureId)
+      .is('deleted_at', null)
       .single();
 
     if (error || !data) return undefined;
@@ -345,7 +346,8 @@ class SupabaseDatabase {
     const { data, error } = await supabase
       .from('predictions')
       .select('*')
-      .eq('user_id', userId);
+      .eq('user_id', userId)
+      .is('deleted_at', null);
 
     if (error) return [];
 
@@ -355,9 +357,20 @@ class SupabaseDatabase {
   async getAllPredictions(): Promise<Prediction[]> {
     const { data, error } = await supabase
       .from('predictions')
-      .select('*');
+      .select('*')
+      .is('deleted_at', null); // Only get non-deleted predictions
 
-    if (error) return [];
+    if (error) {
+      console.error('❌ Error fetching predictions:', error);
+      return [];
+    }
+
+    console.log('✅ Fetched predictions from DB:', data?.length || 0);
+
+    if (!data || data.length === 0) {
+      console.warn('⚠️ No predictions found in database');
+      return [];
+    }
 
     return data.map(this.mapPrediction);
   }

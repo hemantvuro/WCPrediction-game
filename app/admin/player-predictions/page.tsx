@@ -45,6 +45,12 @@ export default function PlayerPredictionsPage() {
       const allFixtures: Fixture[] = await fixturesRes.json();
       const allPredictions: Prediction[] = await predictionsRes.json();
 
+      console.log('=== PLAYER PREDICTIONS DEBUG ===');
+      console.log('Total users:', users.length);
+      console.log('Total fixtures:', allFixtures.length);
+      console.log('Total predictions:', allPredictions.length);
+      console.log('Sample prediction:', allPredictions[0]);
+
       // Filter fixtures that were open on the selected date
       const targetDate = new Date(selectedDate);
       const targetStart = new Date(targetDate);
@@ -60,6 +66,7 @@ export default function PlayerPredictionsPage() {
 
       console.log('Target date:', selectedDate);
       console.log('Fixtures on target date:', targetFixtures.length);
+      console.log('Target fixtures:', targetFixtures.map(f => `${f.teamA} vs ${f.teamB}`));
 
       // Create records for all users and fixtures
       const predictionRecords: PredictionRecord[] = [];
@@ -76,6 +83,10 @@ export default function PlayerPredictionsPage() {
           });
         });
       });
+
+      console.log('Total prediction records created:', predictionRecords.length);
+      console.log('Records with predictions:', predictionRecords.filter(r => r.prediction).length);
+      console.log('Sample record with prediction:', predictionRecords.find(r => r.prediction));
 
       // Sort by fixture date, then by user name
       predictionRecords.sort((a, b) => {
