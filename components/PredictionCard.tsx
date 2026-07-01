@@ -31,6 +31,7 @@ export default function PredictionCard({ fixture, existingPrediction, onPredict 
   const [isExpired, setIsExpired] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [stats, setStats] = useState<FixtureStats | null>(null);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   const isGroupStage = fixture.stage === 'group';
 
@@ -174,11 +175,13 @@ export default function PredictionCard({ fixture, existingPrediction, onPredict 
       );
 
       console.log('✅ Save complete');
+      setSaveError(null);
 
       // Fetch stats after saving
       fetchStats();
     } catch (error) {
       console.error('❌ Auto-save failed:', error);
+      setSaveError('Failed to save prediction. This fixture may be closed.');
     } finally {
       setIsSaving(false);
     }
@@ -426,10 +429,19 @@ export default function PredictionCard({ fixture, existingPrediction, onPredict 
         </div>
 
         {/* Persistent "Saved" indicator - always shows if prediction exists */}
-        {existingPrediction && !isExpired && (
+        {existingPrediction && !isExpired && !saveError && (
           <div className="mt-3 bg-green-50 rounded-lg p-2 border border-green-200">
             <p className="text-xs text-center text-green-700 font-semibold">
               {isSaving ? '💾 Saving...' : '✓ Saved'}
+            </p>
+          </div>
+        )}
+
+        {/* Error indicator */}
+        {saveError && !isExpired && (
+          <div className="mt-3 bg-red-50 rounded-lg p-2 border border-red-200">
+            <p className="text-xs text-center text-red-700 font-semibold">
+              ⚠️ {saveError}
             </p>
           </div>
         )}

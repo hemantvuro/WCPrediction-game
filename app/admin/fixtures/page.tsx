@@ -700,30 +700,28 @@ function FixtureForm({
         </div>
       </div>
 
-      <div className="p-4 bg-blue-50 rounded-lg border-2 border-blue-200">
-        <label className="block text-sm font-bold text-gray-700 mb-3">Status</label>
-        <div className="flex items-center gap-4">
-          <label className="relative inline-flex items-center cursor-pointer">
-            <input
-              type="checkbox"
-              checked={formData.status === 'open'}
-              onChange={(e) => setFormData({ ...formData, status: e.target.checked ? 'open' : 'locked' })}
-              disabled={formData.status === 'completed'}
-              className="sr-only peer"
-            />
-            <div className="w-14 h-7 bg-red-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-200 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-green-400 peer-disabled:opacity-50 peer-disabled:cursor-not-allowed"></div>
-          </label>
-          <span className={`text-sm font-bold ${formData.status === 'open' ? 'text-green-700' : formData.status === 'completed' ? 'text-blue-700' : 'text-red-700'}`}>
-            {formData.status === 'open' && '🔓 Open for Predictions'}
-            {formData.status === 'locked' && '🔒 Locked'}
-            {formData.status === 'completed' && '✅ Completed'}
-          </span>
+      <div className="p-6 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg border-4 border-blue-300 shadow-lg">
+        <label className="block text-lg font-black text-gray-900 mb-3 uppercase">
+          ⚙️ FIXTURE STATUS
+        </label>
+        <select
+          value={formData.status}
+          onChange={(e) => setFormData({ ...formData, status: e.target.value as any })}
+          className="w-full px-4 py-3 text-lg border-4 border-blue-500 rounded-xl focus:ring-4 focus:ring-blue-300 font-bold bg-white shadow-md"
+        >
+          <option value="locked">🔒 LOCKED (Upcoming)</option>
+          <option value="open">🔓 OPEN for Predictions</option>
+          <option value="completed">✅ COMPLETED - Enter Results Below ⬇️</option>
+        </select>
+        <div className={`mt-3 p-3 rounded-lg font-semibold text-sm ${
+          formData.status === 'open' ? 'bg-green-100 text-green-800' :
+          formData.status === 'locked' ? 'bg-red-100 text-red-800' :
+          'bg-blue-100 text-blue-800'
+        }`}>
+          {formData.status === 'open' && '✓ Users can make predictions'}
+          {formData.status === 'locked' && '✗ Predictions not allowed'}
+          {formData.status === 'completed' && '✓ Results section appears below ⬇️'}
         </div>
-        {formData.status !== 'completed' && (
-          <p className="text-xs text-gray-600 mt-2">
-            Toggle to open or lock this fixture for predictions
-          </p>
-        )}
       </div>
 
       <div className="p-4 bg-indigo-50 rounded-lg border-2 border-indigo-200">
@@ -777,45 +775,62 @@ function FixtureForm({
       </div>
 
       {formData.status === 'completed' && (
-        <div className="grid md:grid-cols-2 gap-4 p-4 bg-green-50 rounded-lg">
-          <div>
-            <label className="block text-sm font-bold text-gray-700 mb-1">Result</label>
+        <div className="grid md:grid-cols-2 gap-4 p-6 bg-gradient-to-r from-green-50 to-teal-50 rounded-lg border-4 border-green-400 shadow-xl">
+          <div className="md:col-span-2 mb-4">
+            <h3 className="text-2xl font-black text-green-900 uppercase flex items-center gap-2">
+              🏆 ENTER MATCH RESULTS
+              <span className="text-sm bg-green-200 px-3 py-1 rounded-full">Required for Points</span>
+            </h3>
+            <p className="text-sm text-green-800 font-semibold mt-1">
+              Fill in all fields below to calculate user points
+            </p>
+          </div>
+          <div className="md:col-span-2">
+            <label className="block text-lg font-black text-gray-900 mb-2 uppercase">
+              1️⃣ WHO WON?
+            </label>
             <select
               value={formData.result || ''}
               onChange={(e) => setFormData({ ...formData, result: e.target.value as any })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+              className="w-full px-4 py-3 text-lg border-4 border-green-500 rounded-xl focus:ring-4 focus:ring-green-300 font-bold bg-white shadow-md"
             >
-              <option value="">Select Result</option>
-              <option value="teamA">Team A Won</option>
-              <option value="draw">Draw</option>
-              <option value="teamB">Team B Won</option>
+              <option value="">👉 SELECT WINNER</option>
+              <option value="teamA">🏆 {formData.teamA || 'TEAM A'} WON</option>
+              <option value="draw">🤝 DRAW</option>
+              <option value="teamB">🏆 {formData.teamB || 'TEAM B'} WON</option>
             </select>
           </div>
           <div className="md:col-span-2">
-            <label className="block text-sm font-bold text-gray-700 mb-2">
-              Final Score (90 + Extra Time)
+            <label className="block text-lg font-black text-gray-900 mb-2 uppercase">
+              2️⃣ FINAL SCORE
             </label>
-            <p className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded px-2 py-1 mb-2">
-              ⚠️ Enter score after 90 minutes + extra time (120 min total). Do NOT include penalty shootout goals.
+            <p className="text-sm text-amber-800 bg-amber-100 border-2 border-amber-400 rounded-lg px-3 py-2 mb-3 font-bold">
+              ⚠️ After 90 min + Extra Time (120 total). NO penalty shootout goals!
             </p>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-2 gap-4">
               <div>
+                <label className="block text-sm font-bold text-gray-700 mb-1">
+                  {formData.teamAFlag} {formData.teamA || 'TEAM A'} GOALS
+                </label>
                 <input
                   type="number"
                   value={formData.scoreA}
                   onChange={(e) => setFormData({ ...formData, scoreA: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
-                  placeholder={`${formData.teamA || 'Team A'} goals`}
+                  className="w-full px-4 py-4 text-2xl font-black border-4 border-blue-500 rounded-xl focus:ring-4 focus:ring-blue-300 text-center bg-white shadow-md"
+                  placeholder="0"
                   min="0"
                 />
               </div>
               <div>
+                <label className="block text-sm font-bold text-gray-700 mb-1">
+                  {formData.teamBFlag} {formData.teamB || 'TEAM B'} GOALS
+                </label>
                 <input
                   type="number"
                   value={formData.scoreB}
                   onChange={(e) => setFormData({ ...formData, scoreB: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
-                  placeholder={`${formData.teamB || 'Team B'} goals`}
+                  className="w-full px-4 py-4 text-2xl font-black border-4 border-purple-500 rounded-xl focus:ring-4 focus:ring-purple-300 text-center bg-white shadow-md"
+                  placeholder="0"
                   min="0"
                 />
               </div>
@@ -823,13 +838,15 @@ function FixtureForm({
           </div>
           <div className="md:col-span-2">
             <div className="flex justify-between items-center mb-2">
-              <label className="block text-sm font-bold text-gray-700">Goal Scorers</label>
+              <label className="block text-lg font-black text-gray-900 uppercase">
+                3️⃣ GOAL SCORERS (Optional)
+              </label>
               {fixture?.id && (
                 <button
                   type="button"
                   onClick={handleFetchScorers}
                   disabled={isFetchingScorers}
-                  className="px-4 py-1.5 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition font-semibold text-sm shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                  className="px-6 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl hover:from-purple-600 hover:to-pink-600 transition font-black text-sm shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                 >
                   {isFetchingScorers ? (
                     <>
@@ -838,7 +855,7 @@ function FixtureForm({
                     </>
                   ) : (
                     <>
-                      🔄 Fetch from API
+                      🔄 Auto-Fill from API
                     </>
                   )}
                 </button>
@@ -855,18 +872,18 @@ function FixtureForm({
               </div>
             )}
 
-            <p className="text-xs text-blue-600 mb-2">
-              💡 Click "Fetch from API" to auto-fill goal scorers, or enter manually below
+            <p className="text-sm text-blue-800 bg-blue-100 border-2 border-blue-300 rounded-lg px-3 py-2 mb-3 font-semibold">
+              💡 Click "Auto-Fill" button above OR type names separated by commas below
             </p>
             <input
               type="text"
               value={formData.goalScorers}
               onChange={(e) => setFormData({ ...formData, goalScorers: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
-              placeholder="Will auto-fill when you click 'Fetch from API'"
+              className="w-full px-4 py-3 text-lg border-4 border-yellow-400 rounded-xl focus:ring-4 focus:ring-yellow-300 font-semibold bg-white shadow-md"
+              placeholder="Example: Messi, Di Maria, Messi"
             />
-            <p className="text-xs text-gray-500 mt-1">
-              Format: Names separated by commas. Repeat name for multiple goals (e.g., "Messi, Messi, Ronaldo")
+            <p className="text-xs text-gray-600 mt-2 font-medium">
+              ℹ️ Separate with commas. Same player can appear multiple times for multiple goals.
             </p>
           </div>
         </div>

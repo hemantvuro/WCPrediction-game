@@ -516,6 +516,20 @@ class SupabaseDatabase {
     const predictions = await this.getAllPredictions();
     const fixtures = await this.getAllFixtures();
 
+    // Get previous leaderboard snapshot (most recent one before now)
+    const { data: previousSnapshot } = await supabase
+      .from('leaderboard_history')
+      .select('user_id, rank, total_points')
+      .order('snapshot_date', { ascending: false })
+      .limit(100);
+
+    const previousRanks = new Map<string, { rank: number; points: number }>();
+    if (previousSnapshot) {
+      previousSnapshot.forEach(snap => {
+        previousRanks.set(snap.user_id, { rank: snap.rank, points: snap.total_points });
+      });
+    }
+
     const leaderboard: LeaderboardEntry[] = users.map(user => {
       const userPredictions = predictions.filter(p => p.userId === user.id);
 
@@ -560,6 +574,8 @@ class SupabaseDatabase {
       // Otherwise use the calculated points from predictions
       const finalPoints = user.points !== undefined && user.points !== 0 ? user.points : totalPoints;
 
+      const previous = previousRanks.get(user.id);
+
       return {
         userId: user.id,
         userName: user.firstName,
@@ -567,8 +583,8 @@ class SupabaseDatabase {
         correctPredictions,
         exactScores,
         rank: 0,
-        previousRank: 0,
-        pointsChange: 0,
+        previousRank: previous?.rank || 0,
+        pointsChange: previous ? finalPoints - previous.points : 0,
       };
     });
 
@@ -579,6 +595,24 @@ class SupabaseDatabase {
     });
 
     return leaderboard;
+  }
+
+  async saveLeaderboardSnapshot(leaderboard: LeaderboardEntry[]): Promise<void> {
+    // Save current leaderboard state to history
+    const snapshots = leaderboard.map(entry => ({
+      user_id: entry.userId,
+      rank: entry.rank,
+      total_points: entry.totalPoints,
+      snapshot_date: new Date().toISOString(),
+    }));
+
+    const { error } = await supabase
+      .from('leaderboard_history')
+      .insert(snapshots);
+
+    if (error) {
+      console.error('Failed to save leaderboard snapshot:', error);
+    }
   }
 
   private getPointsRuleSync(stage: string): PointsRule {

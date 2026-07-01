@@ -7,6 +7,7 @@ export default function RulesManagement() {
   const [pointsRules, setPointsRules] = useState<PointsRule[]>([]);
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     loadRules();
@@ -15,10 +16,19 @@ export default function RulesManagement() {
   const loadRules = async () => {
     try {
       const response = await fetch('/api/admin/points');
+      if (!response.ok) {
+        throw new Error(`Failed to load rules: ${response.status}`);
+      }
       const data = await response.json();
-      setPointsRules(data);
+      if (!data || data.length === 0) {
+        setError('No points rules found. Please run the CREATE_POINTS_RULES.sql script in Supabase.');
+      } else {
+        setPointsRules(data);
+        setError(null);
+      }
     } catch (error) {
       console.error('Failed to load rules:', error);
+      setError('Failed to load rules. Check console for details.');
     } finally {
       setIsLoading(false);
     }
@@ -35,12 +45,15 @@ export default function RulesManagement() {
         }),
       });
 
-      if (response.ok) {
-        loadRules();
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to update rule');
       }
+
+      await loadRules();
     } catch (error) {
       console.error('Failed to update rule:', error);
-      alert('Failed to update rule');
+      alert(`Failed to update rule: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   };
 
@@ -82,6 +95,21 @@ export default function RulesManagement() {
       </header>
 
       <div className="max-w-7xl mx-auto px-4 py-6">
+        {error && (
+          <div className="bg-red-50 border-2 border-red-300 rounded-lg p-6 mb-6">
+            <h3 className="font-bold text-red-900 text-lg mb-2">⚠️ Setup Required</h3>
+            <p className="text-red-800 mb-4">{error}</p>
+            <div className="bg-white rounded p-4 border border-red-200">
+              <p className="text-sm font-bold text-red-900 mb-2">To fix this:</p>
+              <ol className="text-sm text-red-800 space-y-1 list-decimal list-inside">
+                <li>Go to Supabase SQL Editor</li>
+                <li>Run the SQL from <code className="bg-red-100 px-2 py-1 rounded">CREATE_POINTS_RULES.sql</code></li>
+                <li>Refresh this page</li>
+              </ol>
+            </div>
+          </div>
+        )}
+
         <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
           <div className="flex justify-between items-center mb-6">
             <div>

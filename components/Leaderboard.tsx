@@ -46,30 +46,15 @@ export default function Leaderboard({ entries, onExport, onRefresh, lastUpdated 
       <div className="flex justify-between items-center">
         <div>
           <h2 className="text-2xl font-bold text-gray-800">🏆 Leaderboard</h2>
-          {lastUpdated && (
-            <p className="text-xs text-gray-500 mt-1">
-              Last updated: {lastUpdated.toLocaleTimeString()}
-            </p>
-          )}
         </div>
-        <div className="flex gap-2">
-          {onRefresh && (
-            <button
-              onClick={onRefresh}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm font-medium"
-            >
-              🔄 Refresh
-            </button>
-          )}
-          {onExport && (
-            <button
-              onClick={onExport}
-              className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-sm font-medium"
-            >
-              📋 Export
-            </button>
-          )}
-        </div>
+        {onExport && (
+          <button
+            onClick={onExport}
+            className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-sm font-medium"
+          >
+            📋 Export
+          </button>
+        )}
       </div>
 
       <div className="space-y-2">

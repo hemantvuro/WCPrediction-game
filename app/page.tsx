@@ -235,8 +235,7 @@ export default function Home() {
           !entry.previousRank ? '→' :
           entry.previousRank > entry.rank ? '↑' :
           entry.previousRank < entry.rank ? '↓' : '→';
-        const trophy = entry.rank === 1 ? '🥇' : entry.rank === 2 ? '🥈' : entry.rank === 3 ? '🥉' : '';
-        return `${entry.rank}. ${movement} ${trophy} ${entry.userName} - ${entry.totalPoints} pts ${entry.pointsChange > 0 ? `(+${entry.pointsChange})` : ''}`;
+        return `${entry.rank}. ${movement} ${entry.userName} - ${entry.totalPoints} pts ${entry.pointsChange > 0 ? `(+${entry.pointsChange})` : ''}`;
       })
       .join('\n');
 
@@ -359,7 +358,14 @@ export default function Home() {
 
         {activeTab === 'upcoming' && (
           <>
-            {isAdmin && (
+            {isAdmin && openFixtures.length === 0 && (
+              <div className="mb-4 p-4 bg-yellow-50 border-l-4 border-yellow-500 rounded">
+                <p className="text-sm text-yellow-800">
+                  ⚠️ <strong>No open fixtures!</strong> Users cannot predict. Go to <a href="/admin/fixtures" className="underline font-bold">Fixture Management</a> and click "🤖 Auto-Update Status" to open tomorrow's matches.
+                </p>
+              </div>
+            )}
+            {isAdmin && openFixtures.length > 0 && (
               <div className="mb-4 flex justify-end">
                 <button
                   onClick={copyMatchPredictionMatches}
@@ -472,11 +478,13 @@ export default function Home() {
         {activeTab === 'leaderboard' && (
           <>
             {isAdmin && (
-              <div className="mb-4 p-4 bg-blue-50 border-l-4 border-blue-500 rounded">
-                <p className="text-sm text-blue-800">
-                  ℹ️ <strong>Admin Note:</strong> Changes in "Manage Participants" are reflected here automatically.
-                  Click "🔄 Refresh" below if needed.
-                </p>
+              <div className="mb-4 flex justify-end">
+                <button
+                  onClick={copyLeaderboard}
+                  className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-semibold shadow-lg"
+                >
+                  📋 Copy Leaderboard
+                </button>
               </div>
             )}
             <Leaderboard
@@ -504,6 +512,14 @@ export default function Home() {
               <div className="text-5xl mb-4">👥</div>
               <div className="font-bold text-2xl mb-2">Manage Participants</div>
               <div className="text-sm text-purple-100">View and manage all users</div>
+            </a>
+            <a
+              href="/admin/player-predictions"
+              className="block p-8 bg-gradient-to-br from-green-500 to-teal-600 text-white rounded-xl hover:from-green-600 hover:to-teal-700 transition shadow-xl text-center"
+            >
+              <div className="text-5xl mb-4">📊</div>
+              <div className="font-bold text-2xl mb-2">Player Predictions</div>
+              <div className="text-sm text-green-100">View previous day predictions</div>
             </a>
             <a
               href="/admin/rules"
