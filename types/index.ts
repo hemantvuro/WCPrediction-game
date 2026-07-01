@@ -67,6 +67,8 @@ export interface LeaderboardEntry {
   rank: number;
   previousRank?: number;
   pointsChange: number;
+  correctPredictions?: number;
+  exactScores?: number;
 }
 
 export interface AdminStats {
