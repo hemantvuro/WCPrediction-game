@@ -2,6 +2,7 @@
 
 import { LeaderboardEntry } from '@/types';
 import { ArrowUp, ArrowDown, Minus } from 'lucide-react';
+import { getBadges } from '@/lib/badges';
 
 interface LeaderboardProps {
   entries: LeaderboardEntry[];
@@ -46,6 +47,9 @@ export default function Leaderboard({ entries, onExport, onRefresh, lastUpdated 
       <div className="flex justify-between items-center">
         <div>
           <h2 className="text-2xl font-bold text-gray-800">🏆 Leaderboard</h2>
+          <p className="text-sm text-green-600 font-semibold mt-1">
+            📊 Updates in real-time after each match
+          </p>
         </div>
         {onExport && (
           <button
@@ -80,6 +84,25 @@ export default function Leaderboard({ entries, onExport, onRefresh, lastUpdated 
                 {entry.pointsChange > 0 && (
                   <div className="text-sm text-green-600">+{entry.pointsChange} pts</div>
                 )}
+                {/* Badges */}
+                <div className="flex flex-wrap gap-1 mt-2">
+                  {getBadges({
+                    rank: entry.rank,
+                    totalPoints: entry.totalPoints,
+                    correctPredictions: entry.correctPredictions || 0,
+                    exactScores: entry.exactScores || 0,
+                    pointsChange: entry.pointsChange || 0,
+                  }).map((badge) => (
+                    <span
+                      key={badge.id}
+                      className={`${badge.color} text-white text-xs px-2 py-1 rounded-full font-semibold flex items-center gap-1`}
+                      title={badge.description}
+                    >
+                      <span>{badge.emoji}</span>
+                      <span>{badge.name}</span>
+                    </span>
+                  ))}
+                </div>
               </div>
 
               <div className="text-right">

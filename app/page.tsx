@@ -6,6 +6,7 @@ import PredictionCard from '@/components/PredictionCard';
 import FixtureCard from '@/components/FixtureCard';
 import Leaderboard from '@/components/Leaderboard';
 import { User, Fixture, Prediction, LeaderboardEntry, PredictionResult } from '@/types';
+import { generateWeeklyRecap } from '@/lib/weeklyRecap';
 
 type Tab = 'upcoming' | 'all' | 'leaderboard' | 'admin';
 
@@ -229,7 +230,26 @@ export default function Home() {
   };
 
   const copyLeaderboard = () => {
-    const text = leaderboard
+    const top3 = leaderboard.slice(0, 3);
+    const rest = leaderboard.slice(3);
+
+    // Find biggest gainer
+    const biggestGainer = [...leaderboard].sort((a, b) => b.pointsChange - a.pointsChange)[0];
+
+    // Podium
+    const podiumText = top3
+      .map((entry) => {
+        const medal = entry.rank === 1 ? '🥇' : entry.rank === 2 ? '🥈' : '🥉';
+        const movement =
+          !entry.previousRank ? '→' :
+          entry.previousRank > entry.rank ? '↑' :
+          entry.previousRank < entry.rank ? '↓' : '→';
+        return `${entry.rank}. ${medal} ${movement} ${entry.userName} - ${entry.totalPoints} pts ${entry.pointsChange > 0 ? `(+${entry.pointsChange})` : ''}`;
+      })
+      .join('\n');
+
+    // Rest of leaderboard
+    const restText = rest
       .map((entry) => {
         const movement =
           !entry.previousRank ? '→' :
@@ -239,10 +259,18 @@ export default function Home() {
       })
       .join('\n');
 
-    const fullText = `🏆 LEADERBOARD - FIFA 2026 🏆\n${new Date().toLocaleDateString()}\n\n${text}`;
+    const fullText = `🏆 WC 2026 LEADERBOARD - ${new Date().toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata', month: 'short', day: 'numeric' })} 🏆
+
+${podiumText}
+${rest.length > 0 ? `\n${restText}` : ''}
+
+${biggestGainer.pointsChange > 0 ? `🔥 Biggest Gainer: ${biggestGainer.userName} (+${biggestGainer.pointsChange}!)` : ''}
+📊 Updates in real-time after each match
+
+Make your predictions now! 🎯`;
 
     navigator.clipboard.writeText(fullText);
-    alert('Leaderboard copied to clipboard!');
+    alert('✅ Leaderboard copied to clipboard! Paste in WhatsApp group.');
   };
 
   const loadLeaderboard = async () => {
@@ -478,7 +506,17 @@ export default function Home() {
         {activeTab === 'leaderboard' && (
           <>
             {isAdmin && (
-              <div className="mb-4 flex justify-end">
+              <div className="mb-4 flex justify-end gap-3">
+                <button
+                  onClick={() => {
+                    const recap = generateWeeklyRecap(leaderboard);
+                    navigator.clipboard.writeText(recap);
+                    alert('✅ Weekly recap copied! Share in WhatsApp group.');
+                  }}
+                  className="px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition font-semibold shadow-lg"
+                >
+                  📊 Weekly Recap
+                </button>
                 <button
                   onClick={copyLeaderboard}
                   className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-semibold shadow-lg"

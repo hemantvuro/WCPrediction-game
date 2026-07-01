@@ -22,8 +22,8 @@ interface FixtureStats {
 
 export default function PredictionCard({ fixture, existingPrediction, onPredict }: PredictionCardProps) {
   const [selectedOutcome, setSelectedOutcome] = useState<PredictionResult | null>(null);
-  const [scoreA, setScoreA] = useState<string>('');
-  const [scoreB, setScoreB] = useState<string>('');
+  const [scoreA, setScoreA] = useState<string>('0');
+  const [scoreB, setScoreB] = useState<string>('0');
   const [goalScorer1, setGoalScorer1] = useState<string>('');
   const [goalScorer2, setGoalScorer2] = useState<string>('');
   const [goalScorer3, setGoalScorer3] = useState<string>('');
@@ -44,8 +44,8 @@ export default function PredictionCard({ fixture, existingPrediction, onPredict 
     console.log('📥 Loading existing prediction:', existingPrediction);
     if (existingPrediction) {
       setSelectedOutcome(existingPrediction.prediction);
-      setScoreA(existingPrediction.scoreA?.toString() || '');
-      setScoreB(existingPrediction.scoreB?.toString() || '');
+      setScoreA(existingPrediction.scoreA?.toString() || '0');
+      setScoreB(existingPrediction.scoreB?.toString() || '0');
       setGoalScorer1(existingPrediction.goalScorers?.[0] || '');
       setGoalScorer2(existingPrediction.goalScorers?.[1] || '');
       setGoalScorer3(existingPrediction.goalScorers?.[2] || '');
@@ -276,8 +276,8 @@ export default function PredictionCard({ fixture, existingPrediction, onPredict 
         </div>
       )}
 
-      {/* Goal Scorers Section */}
-      {enableScorerPrediction && (
+      {/* Goal Scorers Section - DISABLED */}
+      {false && enableScorerPrediction && (
         <div className="p-6 bg-gradient-to-br from-yellow-50 to-orange-50 border-b-2 border-gray-100">
           <h3 className="text-sm font-bold text-gray-700 mb-4 text-center">
             🎯 Predict Goal Scorers (Bonus Points)

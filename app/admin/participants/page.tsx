@@ -31,7 +31,13 @@ export default function ParticipantsManagement() {
       const data = await response.json();
       console.log('Loaded users:', data);
       console.log('User count:', data.length);
-      setUsers(data);
+
+      // Sort alphabetically by first name
+      const sortedUsers = [...data].sort((a, b) =>
+        a.firstName.localeCompare(b.firstName, undefined, { sensitivity: 'base' })
+      );
+
+      setUsers(sortedUsers);
     } catch (error) {
       console.error('Failed to load users:', error);
       alert(`❌ Error loading users: ${error}`);
