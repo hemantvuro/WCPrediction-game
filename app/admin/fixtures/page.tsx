@@ -392,6 +392,8 @@ function FixtureForm({
       teamB: fixture?.teamB || '',
       teamAFlag: fixture?.teamAFlag || '',
       teamBFlag: fixture?.teamBFlag || '',
+      stage: fixture?.stage || 'group',
+      group: fixture?.group || '',
       matchDate: fixture?.matchDate
         ? new Date(fixture.matchDate).toISOString().slice(0, 16)
         : '',
@@ -504,8 +506,8 @@ function FixtureForm({
       teamB: formData.teamB,
       teamAFlag: formData.teamAFlag,
       teamBFlag: formData.teamBFlag,
-      stage: fixture?.stage || 'group',
-      group: fixture?.group || undefined,
+      stage: formData.stage,
+      group: formData.group || undefined,
       matchDate: new Date(formData.matchDate).toISOString(),
       status: formData.status,
       scoreA: formData.scoreA ? parseInt(formData.scoreA) : undefined,
@@ -587,6 +589,41 @@ function FixtureForm({
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
             required
           />
+        </div>
+        <div>
+          <label className="block text-sm font-bold text-gray-700 mb-1">
+            Tournament Stage <span className="text-red-500">*</span>
+          </label>
+          <select
+            value={formData.stage}
+            onChange={(e) => setFormData({ ...formData, stage: e.target.value as any })}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 font-semibold"
+            required
+          >
+            <option value="group">Group Stage (2 pts result + 2 pts score)</option>
+            <option value="round32">Round of 32 (3 pts result + 3 pts score)</option>
+            <option value="round16">Round of 16 (4 pts result + 4 pts score)</option>
+            <option value="quarter">Quarter Finals (5 pts result + 5 pts score)</option>
+            <option value="semi">Semi Finals (6 pts result + 6 pts score)</option>
+            <option value="third_place">Third Place (6 pts result + 6 pts score)</option>
+            <option value="final">Final (10 pts result + 10 pts score)</option>
+          </select>
+        </div>
+        <div>
+          <label className="block text-sm font-bold text-gray-700 mb-1">
+            Group (optional, for group stage only)
+          </label>
+          <input
+            type="text"
+            value={formData.group}
+            onChange={(e) => setFormData({ ...formData, group: e.target.value })}
+            placeholder="e.g., Group A, Group B"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+            disabled={formData.stage !== 'group'}
+          />
+          <p className="text-xs text-gray-500 mt-1">
+            Only applicable for group stage matches
+          </p>
         </div>
       </div>
 
