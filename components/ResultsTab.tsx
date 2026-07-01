@@ -14,8 +14,7 @@ export default function ResultsTab({ fixtures, predictions }: ResultsTabProps) {
 
   if (completedFixtures.length === 0) {
     return (
-      <div className="p-8 text-center pb-20">
-        <div className="text-6xl mb-4">📊</div>
+      <div className="p-8 text-center">
         <p className="text-gray-500">No completed matches yet</p>
       </div>
     );
@@ -55,10 +54,10 @@ export default function ResultsTab({ fixtures, predictions }: ResultsTabProps) {
   };
 
   return (
-    <div className="space-y-4 pb-20">
+    <div className="space-y-4">
       {/* Header */}
       <div className="bg-gradient-to-br from-green-500 to-teal-500 rounded-2xl p-6 text-white shadow-xl">
-        <h2 className="text-2xl font-bold mb-2">📊 Match Results</h2>
+        <h2 className="text-2xl font-bold mb-2">Match Results</h2>
         <p className="text-green-100">{completedFixtures.length} matches completed</p>
       </div>
 
@@ -107,12 +106,12 @@ export default function ResultsTab({ fixtures, predictions }: ResultsTabProps) {
                   <div className={`text-right ${correct ? 'text-green-600' : 'text-red-600'}`}>
                     {correct ? (
                       <>
-                        <div className="text-2xl font-bold">✅ +{points}</div>
+                        <div className="text-2xl font-bold">+{points}</div>
                         <div className="text-xs">Correct!</div>
                       </>
                     ) : prediction ? (
                       <>
-                        <div className="text-2xl font-bold">❌ 0</div>
+                        <div className="text-2xl font-bold">0</div>
                         <div className="text-xs">Incorrect</div>
                       </>
                     ) : (

@@ -29,34 +29,21 @@ export default function Leaderboard({ entries, onExport, onRefresh, lastUpdated 
   };
 
   const getRankColor = (rank: number) => {
-    if (rank === 1) return 'bg-yellow-100 border-yellow-400 text-yellow-900';
-    if (rank === 2) return 'bg-gray-100 border-gray-400 text-gray-900';
-    if (rank === 3) return 'bg-orange-100 border-orange-400 text-orange-900';
     return 'bg-white border-gray-200 text-gray-900';
-  };
-
-  const getRankEmoji = (rank: number) => {
-    if (rank === 1) return '🥇';
-    if (rank === 2) return '🥈';
-    if (rank === 3) return '🥉';
-    return `${rank}`;
   };
 
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-bold text-gray-800">🏆 Leaderboard</h2>
-          <p className="text-sm text-green-600 font-semibold mt-1">
-            📊 Updates in real-time after each match
-          </p>
+          <h2 className="text-2xl font-bold text-gray-800">Leaderboard</h2>
         </div>
         {onExport && (
           <button
             onClick={onExport}
             className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-sm font-medium"
           >
-            📋 Export
+            Export
           </button>
         )}
       </div>
@@ -72,9 +59,9 @@ export default function Leaderboard({ entries, onExport, onRefresh, lastUpdated 
               key={entry.userId}
               className={`border-2 rounded-lg p-4 flex items-center gap-4 ${getRankColor(entry.rank)}`}
             >
-              <div className="flex items-center gap-2 min-w-[80px]">
+              <div className="flex items-center gap-2 min-w-[60px]">
                 <div className="text-2xl font-bold">
-                  {getRankEmoji(entry.rank)}
+                  {entry.rank}
                 </div>
                 {getMovementIcon(entry)}
               </div>

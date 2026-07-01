@@ -1,6 +1,6 @@
 'use client';
 
-export type TabType = 'predict' | 'leaderboard' | 'results' | 'stats' | 'admin';
+export type TabType = 'dashboard' | 'leaderboard' | 'results' | 'admin';
 
 interface BottomNavProps {
   activeTab: TabType;
@@ -10,10 +10,9 @@ interface BottomNavProps {
 
 export default function BottomNav({ activeTab, onTabChange, isAdmin }: BottomNavProps) {
   const tabs = [
-    { id: 'predict' as TabType, icon: '⚽', label: 'Predict', show: true },
+    { id: 'dashboard' as TabType, icon: '⚽', label: 'Dashboard', show: true },
     { id: 'leaderboard' as TabType, icon: '🏆', label: 'Board', show: true },
     { id: 'results' as TabType, icon: '📊', label: 'Results', show: true },
-    { id: 'stats' as TabType, icon: '📈', label: 'Stats', show: true },
     { id: 'admin' as TabType, icon: '⚙️', label: 'Admin', show: isAdmin },
   ];
 
