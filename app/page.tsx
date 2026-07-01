@@ -351,14 +351,27 @@ Make your predictions now! 🎯`;
 
         {/* Admin Tab */}
         {activeTab === 'admin' && isAdmin && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
-            <a
-              href="/admin/fixtures"
-              className="block p-4 md:p-6 bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-lg transform hover:scale-105 hover:shadow-xl"
-            >
-              <div className="font-bold text-lg md:text-xl mb-1">Fixture Management</div>
-              <div className="text-xs md:text-sm text-blue-100">Create, edit, and manage matches</div>
-            </a>
+          <>
+            <div className="mb-4 flex justify-end">
+              <button
+                onClick={() => {
+                  const matchesText = formatMatchesForSharing(fixtures, predictions);
+                  navigator.clipboard.writeText(matchesText);
+                  alert('Matches copied to clipboard!');
+                }}
+                className="px-4 py-2 bg-cyan-600 text-white rounded-lg hover:bg-cyan-700 transition-all duration-200 font-semibold text-sm transform hover:scale-105 active:scale-95 shadow hover:shadow-lg"
+              >
+                Copy Matches
+              </button>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
+              <a
+                href="/admin/fixtures"
+                className="block p-4 md:p-6 bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-lg transform hover:scale-105 hover:shadow-xl"
+              >
+                <div className="font-bold text-lg md:text-xl mb-1">Fixture Management</div>
+                <div className="text-xs md:text-sm text-blue-100">Create, edit, and manage matches</div>
+              </a>
             <a
               href="/admin/participants"
               className="block p-4 md:p-6 bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-lg hover:from-purple-600 hover:to-purple-700 transition-all duration-200 shadow-lg transform hover:scale-105 hover:shadow-xl"
@@ -381,8 +394,74 @@ Make your predictions now! 🎯`;
               <div className="text-xs md:text-sm text-orange-100">Configure scoring system</div>
             </a>
           </div>
+          </>
         )}
       </div>
     </div>
   );
+}
+
+function formatMatchesForSharing(fixtures: Fixture[], predictions: Prediction[]): string {
+  const now = new Date();
+
+  // Separate fixtures by status
+  const upcomingFixtures = fixtures
+    .filter(f => f.status === 'open' && new Date(f.matchDate) > now)
+    .sort((a, b) => new Date(a.matchDate).getTime() - new Date(b.matchDate).getTime());
+
+  const completedFixtures = fixtures
+    .filter(f => f.status === 'completed')
+    .sort((a, b) => new Date(b.matchDate).getTime() - new Date(a.matchDate).getTime())
+    .slice(0, 10); // Last 10 completed
+
+  let text = `⚽ FIFA World Cup 2026 - Match Updates\n`;
+  text += `📅 ${new Date().toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata', day: 'numeric', month: 'short', year: 'numeric' })}\n\n`;
+
+  // Completed Matches
+  if (completedFixtures.length > 0) {
+    text += `✅ RECENT RESULTS\n`;
+    text += `${'─'.repeat(40)}\n`;
+    completedFixtures.forEach(fixture => {
+      const resultEmoji = fixture.result === 'teamA' ? '🏆' : fixture.result === 'teamB' ? '🏆' : '🤝';
+      text += `${fixture.teamAFlag} ${fixture.teamA} ${fixture.scoreA} - ${fixture.scoreB} ${fixture.teamB} ${fixture.teamBFlag}\n`;
+
+      // Get prediction stats
+      const predCount = predictions.filter(p => p.fixtureId === fixture.id).length;
+      const correctPreds = predictions.filter(p => p.fixtureId === fixture.id && p.prediction === fixture.result).length;
+      const accuracy = predCount > 0 ? Math.round((correctPreds / predCount) * 100) : 0;
+
+      text += `   ${accuracy}% predicted correctly (${correctPreds}/${predCount} players)\n\n`;
+    });
+  }
+
+  // Upcoming Matches
+  if (upcomingFixtures.length > 0) {
+    text += `\n🔜 UPCOMING MATCHES\n`;
+    text += `${'─'.repeat(40)}\n`;
+    upcomingFixtures.slice(0, 5).forEach(fixture => {
+      const matchTime = new Date(fixture.matchDate).toLocaleString('en-IN', {
+        timeZone: 'Asia/Kolkata',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true
+      });
+
+      text += `${fixture.teamAFlag} ${fixture.teamA} vs ${fixture.teamB} ${fixture.teamBFlag}\n`;
+      text += `   📍 ${matchTime}\n`;
+
+      // Get prediction count
+      const predCount = predictions.filter(p => p.fixtureId === fixture.id).length;
+      if (predCount > 0) {
+        text += `   ${predCount} predictions made\n`;
+      }
+      text += `\n`;
+    });
+  }
+
+  text += `\n📊 Make your predictions now!\n`;
+  text += `🔗 wc-prediction-game-chi.vercel.app`;
+
+  return text;
 }
