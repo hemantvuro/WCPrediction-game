@@ -4,6 +4,7 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "FIFA 2026 World Cup Prediction Game",
   description: "Predict match outcomes and compete with friends",
+  viewport: "width=device-width, initial-scale=1, maximum-scale=1",
 };
 
 export default function RootLayout({

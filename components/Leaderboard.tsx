@@ -12,6 +12,14 @@ interface LeaderboardProps {
 }
 
 export default function Leaderboard({ entries, onExport, onRefresh, lastUpdated }: LeaderboardProps) {
+  // Filter out test users and recalculate ranks
+  const filteredEntries = entries
+    .filter(entry => !['test', 'germanjit'].includes(entry.userName.toLowerCase()))
+    .map((entry, index) => ({
+      ...entry,
+      rank: index + 1, // Recalculate rank starting from 1
+    }));
+
   const getMovementIcon = (entry: LeaderboardEntry) => {
     if (!entry.previousRank) {
       return <Minus className="w-4 h-4 text-gray-400" />;
@@ -29,63 +37,50 @@ export default function Leaderboard({ entries, onExport, onRefresh, lastUpdated 
   };
 
   const getRankColor = (rank: number) => {
-    if (rank === 1) return 'bg-yellow-100 border-yellow-400 text-yellow-900';
-    if (rank === 2) return 'bg-gray-100 border-gray-400 text-gray-900';
-    if (rank === 3) return 'bg-orange-100 border-orange-400 text-orange-900';
     return 'bg-white border-gray-200 text-gray-900';
   };
 
-  const getRankEmoji = (rank: number) => {
-    if (rank === 1) return '🥇';
-    if (rank === 2) return '🥈';
-    if (rank === 3) return '🥉';
-    return `${rank}`;
-  };
-
   return (
-    <div className="space-y-4">
+    <div className="space-y-3 md:space-y-4">
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-bold text-gray-800">🏆 Leaderboard</h2>
-          <p className="text-sm text-green-600 font-semibold mt-1">
-            📊 Updates in real-time after each match
-          </p>
+          <h2 className="text-lg md:text-2xl font-bold text-gray-800">Leaderboard</h2>
         </div>
         {onExport && (
           <button
             onClick={onExport}
-            className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-sm font-medium"
+            className="px-3 md:px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-xs md:text-sm font-medium"
           >
-            📋 Export
+            Export
           </button>
         )}
       </div>
 
       <div className="space-y-2">
-        {entries.length === 0 ? (
-          <div className="bg-white rounded-lg p-8 text-center text-gray-500">
+        {filteredEntries.length === 0 ? (
+          <div className="bg-white rounded-lg p-6 md:p-8 text-center text-sm md:text-base text-gray-500">
             No predictions yet. Start predicting to see the leaderboard!
           </div>
         ) : (
-          entries.map((entry) => (
+          filteredEntries.map((entry) => (
             <div
               key={entry.userId}
-              className={`border-2 rounded-lg p-4 flex items-center gap-4 ${getRankColor(entry.rank)}`}
+              className={`border-2 rounded-lg p-3 md:p-4 flex items-center gap-2 md:gap-4 ${getRankColor(entry.rank)} transition-all duration-200 hover:shadow-lg hover:scale-[1.02] hover:border-blue-300`}
             >
-              <div className="flex items-center gap-2 min-w-[80px]">
-                <div className="text-2xl font-bold">
-                  {getRankEmoji(entry.rank)}
+              <div className="flex items-center gap-1.5 md:gap-2 min-w-[50px] md:min-w-[60px]">
+                <div className="text-xl md:text-2xl font-bold">
+                  {entry.rank}
                 </div>
                 {getMovementIcon(entry)}
               </div>
 
-              <div className="flex-1">
-                <div className="font-semibold text-lg">{entry.userName}</div>
+              <div className="flex-1 min-w-0">
+                <div className="font-semibold text-base md:text-lg truncate">{entry.userName}</div>
                 {entry.pointsChange > 0 && (
-                  <div className="text-sm text-green-600">+{entry.pointsChange} pts</div>
+                  <div className="text-xs md:text-sm text-green-600">+{entry.pointsChange} pts</div>
                 )}
                 {/* Badges */}
-                <div className="flex flex-wrap gap-1 mt-2">
+                <div className="flex flex-wrap gap-1 mt-1 md:mt-2">
                   {getBadges({
                     rank: entry.rank,
                     totalPoints: entry.totalPoints,
@@ -95,18 +90,18 @@ export default function Leaderboard({ entries, onExport, onRefresh, lastUpdated 
                   }).map((badge) => (
                     <span
                       key={badge.id}
-                      className={`${badge.color} text-white text-xs px-2 py-1 rounded-full font-semibold flex items-center gap-1`}
+                      className={`${badge.color} text-white text-xs px-2 py-0.5 md:py-1 rounded-full font-semibold flex items-center gap-1`}
                       title={badge.description}
                     >
-                      <span>{badge.emoji}</span>
+                      <span className="hidden md:inline">{badge.emoji}</span>
                       <span>{badge.name}</span>
                     </span>
                   ))}
                 </div>
               </div>
 
-              <div className="text-right">
-                <div className="text-2xl font-bold">{entry.totalPoints}</div>
+              <div className="text-right flex-shrink-0">
+                <div className="text-xl md:text-2xl font-bold">{entry.totalPoints}</div>
                 <div className="text-xs text-gray-500">points</div>
               </div>
             </div>
