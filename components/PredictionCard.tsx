@@ -149,7 +149,7 @@ export default function PredictionCard({ fixture, existingPrediction, onPredict 
   };
 
   return (
-    <div className="bg-white rounded-2xl shadow-lg border border-gray-200">
+    <div className="bg-white rounded-2xl shadow-lg border border-gray-200 transition-all duration-300 hover:shadow-xl hover:scale-[1.02]">
       {/* Header */}
       <div className="p-4 border-b bg-gray-50">
         <div className="text-sm text-gray-700 text-center font-medium">
@@ -168,11 +168,11 @@ export default function PredictionCard({ fixture, existingPrediction, onPredict 
           <button
             onClick={() => !isExpired && setSelectedOutcome('teamA')}
             disabled={isExpired}
-            className={`w-full sm:w-auto px-4 py-2.5 rounded-lg font-semibold text-sm transition shadow ${
+            className={`w-full sm:w-auto px-4 py-2.5 rounded-lg font-semibold text-sm transition-all duration-200 shadow transform hover:scale-105 active:scale-95 ${
               selectedOutcome === 'teamA'
                 ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg'
-                : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200'
-            } disabled:opacity-50`}
+                : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200 hover:border-blue-400'
+            } disabled:opacity-50 disabled:hover:scale-100`}
           >
             <div className="flex items-center justify-center gap-2">
               <span className="text-xl">{fixture.teamAFlag}</span>
@@ -185,11 +185,11 @@ export default function PredictionCard({ fixture, existingPrediction, onPredict 
           <button
             onClick={() => !isExpired && setSelectedOutcome('teamB')}
             disabled={isExpired}
-            className={`w-full sm:w-auto px-4 py-2.5 rounded-lg font-semibold text-sm transition shadow ${
+            className={`w-full sm:w-auto px-4 py-2.5 rounded-lg font-semibold text-sm transition-all duration-200 shadow transform hover:scale-105 active:scale-95 ${
               selectedOutcome === 'teamB'
                 ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg'
-                : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200'
-            } disabled:opacity-50`}
+                : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200 hover:border-purple-400'
+            } disabled:opacity-50 disabled:hover:scale-100`}
           >
             <div className="flex items-center justify-center gap-2">
               <span className="text-xl">{fixture.teamBFlag}</span>
@@ -210,7 +210,7 @@ export default function PredictionCard({ fixture, existingPrediction, onPredict 
                 value={scoreA}
                 onChange={(e) => setScoreA(e.target.value)}
                 disabled={isExpired}
-                className="w-16 px-2 py-2 border-2 border-gray-300 rounded-lg text-center font-bold focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100"
+                className="w-16 px-2 py-2 border-2 border-gray-300 rounded-lg text-center font-bold focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 transition-all duration-200 hover:border-blue-400"
               />
             </div>
             <div className="mt-5 text-gray-400 font-bold">-</div>
@@ -223,7 +223,7 @@ export default function PredictionCard({ fixture, existingPrediction, onPredict 
                 value={scoreB}
                 onChange={(e) => setScoreB(e.target.value)}
                 disabled={isExpired}
-                className="w-16 px-2 py-2 border-2 border-gray-300 rounded-lg text-center font-bold focus:ring-2 focus:ring-purple-500 focus:border-purple-500 disabled:bg-gray-100"
+                className="w-16 px-2 py-2 border-2 border-gray-300 rounded-lg text-center font-bold focus:ring-2 focus:ring-purple-500 focus:border-purple-500 disabled:bg-gray-100 transition-all duration-200 hover:border-purple-400"
               />
             </div>
           </div>

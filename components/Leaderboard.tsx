@@ -12,6 +12,11 @@ interface LeaderboardProps {
 }
 
 export default function Leaderboard({ entries, onExport, onRefresh, lastUpdated }: LeaderboardProps) {
+  // Filter out test users
+  const filteredEntries = entries.filter(
+    entry => !['test', 'germanjit'].includes(entry.userName.toLowerCase())
+  );
+
   const getMovementIcon = (entry: LeaderboardEntry) => {
     if (!entry.previousRank) {
       return <Minus className="w-4 h-4 text-gray-400" />;
@@ -49,15 +54,15 @@ export default function Leaderboard({ entries, onExport, onRefresh, lastUpdated 
       </div>
 
       <div className="space-y-2">
-        {entries.length === 0 ? (
+        {filteredEntries.length === 0 ? (
           <div className="bg-white rounded-lg p-6 md:p-8 text-center text-sm md:text-base text-gray-500">
             No predictions yet. Start predicting to see the leaderboard!
           </div>
         ) : (
-          entries.map((entry) => (
+          filteredEntries.map((entry) => (
             <div
               key={entry.userId}
-              className={`border-2 rounded-lg p-3 md:p-4 flex items-center gap-2 md:gap-4 ${getRankColor(entry.rank)}`}
+              className={`border-2 rounded-lg p-3 md:p-4 flex items-center gap-2 md:gap-4 ${getRankColor(entry.rank)} transition-all duration-200 hover:shadow-lg hover:scale-[1.02] hover:border-blue-300`}
             >
               <div className="flex items-center gap-1.5 md:gap-2 min-w-[50px] md:min-w-[60px]">
                 <div className="text-xl md:text-2xl font-bold">

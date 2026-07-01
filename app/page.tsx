@@ -244,7 +244,7 @@ Make your predictions now! 🎯`;
             </div>
             <button
               onClick={handleLogout}
-              className="px-2.5 md:px-3 py-1.5 bg-white/20 backdrop-blur-sm text-white rounded-lg hover:bg-white/30 transition text-xs md:text-sm font-semibold"
+              className="px-2.5 md:px-3 py-1.5 bg-white/20 backdrop-blur-sm text-white rounded-lg hover:bg-white/30 transition-all duration-200 text-xs md:text-sm font-semibold transform hover:scale-105 active:scale-95"
               title="Logout"
             >
               Logout
@@ -258,30 +258,30 @@ Make your predictions now! 🎯`;
             <div className="flex gap-1.5 md:gap-2 overflow-x-auto justify-center scrollbar-hide">
               <button
                 onClick={() => setActiveTab('dashboard')}
-                className={`px-3 md:px-6 py-2 md:py-2.5 font-semibold text-xs md:text-sm whitespace-nowrap transition rounded-lg ${
+                className={`px-3 md:px-6 py-2 md:py-2.5 font-semibold text-xs md:text-sm whitespace-nowrap transition-all duration-200 rounded-lg transform hover:scale-105 active:scale-95 ${
                   activeTab === 'dashboard'
                     ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg'
-                    : 'bg-white text-gray-700 hover:bg-gray-50 shadow'
+                    : 'bg-white text-gray-700 hover:bg-gray-50 shadow hover:shadow-md'
                 }`}
               >
                 Match Prediction
               </button>
               <button
                 onClick={() => setActiveTab('leaderboard')}
-                className={`px-3 md:px-6 py-2 md:py-2.5 font-semibold text-xs md:text-sm whitespace-nowrap transition rounded-lg ${
+                className={`px-3 md:px-6 py-2 md:py-2.5 font-semibold text-xs md:text-sm whitespace-nowrap transition-all duration-200 rounded-lg transform hover:scale-105 active:scale-95 ${
                   activeTab === 'leaderboard'
                     ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg'
-                    : 'bg-white text-gray-700 hover:bg-gray-50 shadow'
+                    : 'bg-white text-gray-700 hover:bg-gray-50 shadow hover:shadow-md'
                 }`}
               >
                 Leaderboard
               </button>
               <button
                 onClick={() => setActiveTab('results')}
-                className={`px-3 md:px-6 py-2 md:py-2.5 font-semibold text-xs md:text-sm whitespace-nowrap transition rounded-lg ${
+                className={`px-3 md:px-6 py-2 md:py-2.5 font-semibold text-xs md:text-sm whitespace-nowrap transition-all duration-200 rounded-lg transform hover:scale-105 active:scale-95 ${
                   activeTab === 'results'
                     ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg'
-                    : 'bg-white text-gray-700 hover:bg-gray-50 shadow'
+                    : 'bg-white text-gray-700 hover:bg-gray-50 shadow hover:shadow-md'
                 }`}
               >
                 All Fixtures
@@ -289,10 +289,10 @@ Make your predictions now! 🎯`;
               {isAdmin && (
                 <button
                   onClick={() => setActiveTab('admin')}
-                  className={`px-3 md:px-6 py-2 md:py-2.5 font-semibold text-xs md:text-sm whitespace-nowrap transition rounded-lg ${
+                  className={`px-3 md:px-6 py-2 md:py-2.5 font-semibold text-xs md:text-sm whitespace-nowrap transition-all duration-200 rounded-lg transform hover:scale-105 active:scale-95 ${
                     activeTab === 'admin'
                       ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg'
-                      : 'bg-white text-gray-700 hover:bg-gray-50 shadow'
+                      : 'bg-white text-gray-700 hover:bg-gray-50 shadow hover:shadow-md'
                   }`}
                 >
                   Admin
@@ -328,13 +328,13 @@ Make your predictions now! 🎯`;
                     navigator.clipboard.writeText(recap);
                     alert('Weekly recap copied!');
                   }}
-                  className="px-3 md:px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition font-semibold text-xs md:text-sm"
+                  className="px-3 md:px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-all duration-200 font-semibold text-xs md:text-sm transform hover:scale-105 active:scale-95 shadow hover:shadow-lg"
                 >
                   Weekly Recap
                 </button>
                 <button
                   onClick={copyLeaderboard}
-                  className="px-3 md:px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-semibold text-xs md:text-sm"
+                  className="px-3 md:px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all duration-200 font-semibold text-xs md:text-sm transform hover:scale-105 active:scale-95 shadow hover:shadow-lg"
                 >
                   Copy Leaderboard
                 </button>
@@ -354,28 +354,28 @@ Make your predictions now! 🎯`;
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
             <a
               href="/admin/fixtures"
-              className="block p-4 md:p-6 bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition shadow-lg"
+              className="block p-4 md:p-6 bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-lg transform hover:scale-105 hover:shadow-xl"
             >
               <div className="font-bold text-lg md:text-xl mb-1">Fixture Management</div>
               <div className="text-xs md:text-sm text-blue-100">Create, edit, and manage matches</div>
             </a>
             <a
               href="/admin/participants"
-              className="block p-4 md:p-6 bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-lg hover:from-purple-600 hover:to-purple-700 transition shadow-lg"
+              className="block p-4 md:p-6 bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-lg hover:from-purple-600 hover:to-purple-700 transition-all duration-200 shadow-lg transform hover:scale-105 hover:shadow-xl"
             >
               <div className="font-bold text-lg md:text-xl mb-1">Participants</div>
               <div className="text-xs md:text-sm text-purple-100">Manage all users</div>
             </a>
             <a
               href="/admin/player-predictions"
-              className="block p-4 md:p-6 bg-gradient-to-br from-green-500 to-teal-600 text-white rounded-lg hover:from-green-600 hover:to-teal-700 transition shadow-lg"
+              className="block p-4 md:p-6 bg-gradient-to-br from-green-500 to-teal-600 text-white rounded-lg hover:from-green-600 hover:to-teal-700 transition-all duration-200 shadow-lg transform hover:scale-105 hover:shadow-xl"
             >
               <div className="font-bold text-lg md:text-xl mb-1">Player Predictions</div>
               <div className="text-xs md:text-sm text-green-100">View prediction history</div>
             </a>
             <a
               href="/admin/rules"
-              className="block p-4 md:p-6 bg-gradient-to-br from-orange-500 to-red-600 text-white rounded-lg hover:from-orange-600 hover:to-red-700 transition shadow-lg"
+              className="block p-4 md:p-6 bg-gradient-to-br from-orange-500 to-red-600 text-white rounded-lg hover:from-orange-600 hover:to-red-700 transition-all duration-200 shadow-lg transform hover:scale-105 hover:shadow-xl"
             >
               <div className="font-bold text-lg md:text-xl mb-1">Points Rules</div>
               <div className="text-xs md:text-sm text-orange-100">Configure scoring system</div>

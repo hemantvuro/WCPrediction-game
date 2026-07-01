@@ -73,12 +73,12 @@ export default function DashboardTab({
           <h2 className="text-lg md:text-xl font-bold text-gray-800 mb-3 md:mb-4 px-1">Your Performance</h2>
 
           {/* Leaderboard Position */}
-          <div className="bg-white rounded-2xl p-4 md:p-6 shadow-lg">
+          <div className="bg-white rounded-2xl p-4 md:p-6 shadow-lg transition-all duration-300 hover:shadow-xl">
             <h3 className="text-base md:text-lg font-bold text-gray-800 mb-3 md:mb-4">Your Position</h3>
             <div className="space-y-2">
               {/* Player Above */}
               {playerAbove ? (
-                <div className="flex items-center justify-between px-2 md:px-3 py-2 bg-gray-50 rounded-lg">
+                <div className="flex items-center justify-between px-2 md:px-3 py-2 bg-gray-50 rounded-lg transition-all duration-200 hover:bg-gray-100">
                   <div className="flex items-center gap-1.5 md:gap-2">
                     <span className="text-xs md:text-sm font-semibold text-gray-600">#{playerAbove.rank}</span>
                     <span className="text-xs md:text-sm text-gray-700 truncate">{playerAbove.userName}</span>
@@ -92,7 +92,7 @@ export default function DashboardTab({
               )}
 
               {/* Current User */}
-              <div className="flex items-center justify-between px-3 md:px-4 py-3 md:py-4 bg-gradient-to-r from-yellow-50 to-orange-50 rounded-xl border-2 border-orange-200">
+              <div className="flex items-center justify-between px-3 md:px-4 py-3 md:py-4 bg-gradient-to-r from-yellow-50 to-orange-50 rounded-xl border-2 border-orange-200 transition-all duration-200 hover:shadow-md">
                 <div className="flex items-center gap-2 md:gap-3">
                   <div>
                     {userStats.previousRank && userStats.previousRank > userStats.rank && (
@@ -118,7 +118,7 @@ export default function DashboardTab({
 
               {/* Player Below */}
               {playerBelow ? (
-                <div className="flex items-center justify-between px-2 md:px-3 py-2 bg-gray-50 rounded-lg">
+                <div className="flex items-center justify-between px-2 md:px-3 py-2 bg-gray-50 rounded-lg transition-all duration-200 hover:bg-gray-100">
                   <div className="flex items-center gap-1.5 md:gap-2">
                     <span className="text-xs md:text-sm font-semibold text-gray-600">#{playerBelow.rank}</span>
                     <span className="text-xs md:text-sm text-gray-700 truncate">{playerBelow.userName}</span>
@@ -134,7 +134,7 @@ export default function DashboardTab({
           </div>
 
           {/* Accuracy Stats */}
-          <div className="bg-white rounded-2xl p-4 md:p-6 shadow-lg">
+          <div className="bg-white rounded-2xl p-4 md:p-6 shadow-lg transition-all duration-300 hover:shadow-xl">
             <h3 className="text-base md:text-lg font-bold text-gray-800 mb-3 md:mb-4">Accuracy</h3>
             <div className="grid grid-cols-2 gap-3 md:gap-4">
               <div className="text-center p-3 md:p-4 bg-green-50 rounded-xl">
@@ -150,7 +150,7 @@ export default function DashboardTab({
 
           {/* Badges */}
           {badges.length > 0 && (
-            <div className="bg-white rounded-2xl p-4 md:p-6 shadow-lg">
+            <div className="bg-white rounded-2xl p-4 md:p-6 shadow-lg transition-all duration-300 hover:shadow-xl">
               <h3 className="text-base md:text-lg font-bold text-gray-800 mb-3 md:mb-4">Your Badges</h3>
               <div className="grid grid-cols-2 gap-2 md:gap-3">
                 {badges.map((badge) => (
