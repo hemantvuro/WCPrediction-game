@@ -404,64 +404,45 @@ Make your predictions now! 🎯`;
 function formatMatchesForSharing(fixtures: Fixture[], predictions: Prediction[]): string {
   const now = new Date();
 
-  // Separate fixtures by status
-  const upcomingFixtures = fixtures
+  // Get only open fixtures
+  const openFixtures = fixtures
     .filter(f => f.status === 'open' && new Date(f.matchDate) > now)
     .sort((a, b) => new Date(a.matchDate).getTime() - new Date(b.matchDate).getTime());
 
-  const completedFixtures = fixtures
-    .filter(f => f.status === 'completed')
-    .sort((a, b) => new Date(b.matchDate).getTime() - new Date(a.matchDate).getTime())
-    .slice(0, 10); // Last 10 completed
-
-  let text = `⚽ FIFA World Cup 2026 - Match Updates\n`;
-  text += `📅 ${new Date().toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata', day: 'numeric', month: 'short', year: 'numeric' })}\n\n`;
-
-  // Completed Matches
-  if (completedFixtures.length > 0) {
-    text += `✅ RECENT RESULTS\n`;
-    text += `${'─'.repeat(40)}\n`;
-    completedFixtures.forEach(fixture => {
-      const resultEmoji = fixture.result === 'teamA' ? '🏆' : fixture.result === 'teamB' ? '🏆' : '🤝';
-      text += `${fixture.teamAFlag} ${fixture.teamA} ${fixture.scoreA} - ${fixture.scoreB} ${fixture.teamB} ${fixture.teamBFlag}\n`;
-
-      // Get prediction stats
-      const predCount = predictions.filter(p => p.fixtureId === fixture.id).length;
-      const correctPreds = predictions.filter(p => p.fixtureId === fixture.id && p.prediction === fixture.result).length;
-      const accuracy = predCount > 0 ? Math.round((correctPreds / predCount) * 100) : 0;
-
-      text += `   ${accuracy}% predicted correctly (${correctPreds}/${predCount} players)\n\n`;
-    });
+  if (openFixtures.length === 0) {
+    return 'No upcoming matches available for prediction at the moment.';
   }
 
-  // Upcoming Matches
-  if (upcomingFixtures.length > 0) {
-    text += `\n🔜 UPCOMING MATCHES\n`;
-    text += `${'─'.repeat(40)}\n`;
-    upcomingFixtures.slice(0, 5).forEach(fixture => {
-      const matchTime = new Date(fixture.matchDate).toLocaleString('en-IN', {
+  // Group by date
+  const groupedByDate: { [date: string]: Fixture[] } = {};
+  openFixtures.forEach(fixture => {
+    const date = new Date(fixture.matchDate).toLocaleDateString('en-IN', {
+      timeZone: 'Asia/Kolkata',
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric'
+    });
+    if (!groupedByDate[date]) {
+      groupedByDate[date] = [];
+    }
+    groupedByDate[date].push(fixture);
+  });
+
+  let text = '';
+  Object.keys(groupedByDate).forEach((date, index) => {
+    if (index > 0) text += '\n\n';
+    text += `${date}\n`;
+
+    groupedByDate[date].forEach(fixture => {
+      const time = new Date(fixture.matchDate).toLocaleTimeString('en-IN', {
         timeZone: 'Asia/Kolkata',
-        month: 'short',
-        day: 'numeric',
         hour: '2-digit',
         minute: '2-digit',
         hour12: true
       });
-
-      text += `${fixture.teamAFlag} ${fixture.teamA} vs ${fixture.teamB} ${fixture.teamBFlag}\n`;
-      text += `   📍 ${matchTime}\n`;
-
-      // Get prediction count
-      const predCount = predictions.filter(p => p.fixtureId === fixture.id).length;
-      if (predCount > 0) {
-        text += `   ${predCount} predictions made\n`;
-      }
-      text += `\n`;
+      text += `${time} - ${fixture.teamAFlag} ${fixture.teamA} vs ${fixture.teamB} ${fixture.teamBFlag}\n`;
     });
-  }
-
-  text += `\n📊 Make your predictions now!\n`;
-  text += `🔗 wc-prediction-game-chi.vercel.app`;
+  });
 
   return text;
 }

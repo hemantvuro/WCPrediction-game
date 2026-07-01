@@ -180,25 +180,25 @@ export default function FixturesManagement() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <header className="fifa-gradient shadow-lg">
-        <div className="max-w-7xl mx-auto px-4 py-6">
-          <div className="flex justify-between items-center">
-            <h1 className="text-3xl font-bold text-white">Fixtures Management</h1>
-            <div className="flex gap-2 items-center">
+      <header className="bg-gradient-to-r from-blue-600 via-cyan-500 to-blue-600 shadow-lg sticky top-0 z-40">
+        <div className="max-w-7xl mx-auto px-3 md:px-4 py-3 md:py-4">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 md:gap-0">
+            <h1 className="text-xl md:text-3xl font-bold text-white">Fixtures Management</h1>
+            <div className="flex flex-wrap gap-2 items-center w-full md:w-auto">
               <div className="flex items-center gap-2">
-                <label className="text-white font-semibold">Filter by Date:</label>
+                <label className="text-white font-semibold text-xs md:text-sm">Filter:</label>
                 <input
                   type="date"
                   value={dateFilter}
                   onChange={(e) => setDateFilter(e.target.value)}
-                  className="px-3 py-2 rounded-lg border-2 border-white/30 bg-white/90 text-gray-800 font-semibold"
+                  className="px-2 md:px-3 py-1.5 md:py-2 rounded-lg border-2 border-white/30 bg-white/90 text-gray-800 font-semibold text-xs md:text-sm"
                 />
                 {dateFilter && (
                   <button
                     onClick={() => setDateFilter('')}
-                    className="px-3 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition font-semibold"
+                    className="px-2 md:px-3 py-1.5 md:py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-all duration-200 font-semibold text-xs md:text-sm transform hover:scale-105 active:scale-95"
                   >
-                    ✕ Clear
+                    Clear
                   </button>
                 )}
               </div>
@@ -207,15 +207,15 @@ export default function FixturesManagement() {
                   setShowCreateForm(true);
                   setEditingFixture(null);
                 }}
-                className="px-4 py-2 bg-white text-blue-600 rounded-lg hover:bg-blue-50 transition font-semibold shadow-sm"
+                className="px-3 md:px-4 py-1.5 md:py-2 bg-white text-blue-600 rounded-lg hover:bg-blue-50 transition-all duration-200 font-semibold text-xs md:text-sm shadow transform hover:scale-105 active:scale-95"
               >
-                ➕ Create Fixture
+                Create Fixture
               </button>
               <a
                 href="/"
-                className="px-4 py-2 bg-white/20 backdrop-blur-sm text-white rounded-lg hover:bg-white/30 transition border border-white/30"
+                className="px-3 md:px-4 py-1.5 md:py-2 bg-white/20 backdrop-blur-sm text-white rounded-lg hover:bg-white/30 transition-all duration-200 border border-white/30 text-xs md:text-sm font-semibold transform hover:scale-105 active:scale-95"
               >
-                ← Back
+                Back
               </a>
             </div>
           </div>
@@ -224,23 +224,23 @@ export default function FixturesManagement() {
 
       <div className="max-w-7xl mx-auto px-4 py-6">
         {(editingFixture || showCreateForm) && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-lg shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-              <div className="sticky top-0 bg-white border-b-2 border-gray-200 px-6 py-4 flex justify-between items-center">
-                <h2 className="text-2xl font-bold text-gray-800">
-                  {editingFixture ? '✏️ Edit Fixture' : '➕ Create New Fixture'}
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-3 md:p-4">
+            <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto border border-gray-200">
+              <div className="sticky top-0 bg-gradient-to-r from-blue-600 to-purple-600 px-4 md:px-6 py-3 md:py-4 flex justify-between items-center rounded-t-2xl">
+                <h2 className="text-lg md:text-2xl font-bold text-white">
+                  {editingFixture ? 'Edit Fixture' : 'Create New Fixture'}
                 </h2>
                 <button
                   onClick={() => {
                     setEditingFixture(null);
                     setShowCreateForm(false);
                   }}
-                  className="text-gray-500 hover:text-gray-700 text-3xl font-bold"
+                  className="text-white hover:text-gray-200 text-2xl md:text-3xl font-bold transition-all duration-200 transform hover:scale-110 active:scale-95"
                 >
                   ×
                 </button>
               </div>
-              <div className="p-6">
+              <div className="p-4 md:p-6">
                 <FixtureForm
                   fixture={editingFixture}
                   teams={teams}
@@ -255,23 +255,23 @@ export default function FixturesManagement() {
           </div>
         )}
 
-        <div className="space-y-4">
+        <div className="space-y-3 md:space-y-4">
           {/* Completed Fixtures Accordion */}
           {completedFixtures.length > 0 && (
-            <div className="bg-white rounded-lg shadow-md overflow-hidden border-2 border-gray-200">
+            <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200">
               <button
                 onClick={() => setCompletedExpanded(!completedExpanded)}
-                className="w-full px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition"
+                className="w-full px-4 md:px-6 py-3 md:py-4 flex items-center justify-between hover:bg-gray-50 transition-all duration-200"
               >
-                <div className="flex items-center gap-3">
-                  <span className="text-2xl">{completedExpanded ? '▼' : '▶'}</span>
-                  <h2 className="text-xl font-bold text-gray-700">✅ Completed Matches</h2>
-                  <span className="text-sm text-gray-500 font-semibold">({completedFixtures.length})</span>
+                <div className="flex items-center gap-2 md:gap-3">
+                  <span className="text-lg md:text-2xl">{completedExpanded ? '▼' : '▶'}</span>
+                  <h2 className="text-base md:text-xl font-bold text-gray-700">Completed Matches</h2>
+                  <span className="text-xs md:text-sm text-gray-500 font-semibold">({completedFixtures.length})</span>
                 </div>
               </button>
               {completedExpanded && (
-                <div className="px-6 pb-6">
-                  <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="px-3 md:px-6 pb-4 md:pb-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
                     {completedFixtures.map((fixture) => (
                       <AdminFixtureCard
                         key={fixture.id}
@@ -288,22 +288,22 @@ export default function FixturesManagement() {
 
           {/* Open Fixtures Accordion - Default Expanded */}
           {openFixtures.length > 0 && (
-            <div className="bg-gradient-to-br from-green-50 to-teal-50 rounded-lg shadow-lg overflow-hidden border-4 border-green-400">
+            <div className="bg-gradient-to-br from-green-50 to-teal-50 rounded-xl shadow-lg overflow-hidden border-2 border-green-400">
               <button
                 onClick={() => setOpenExpanded(!openExpanded)}
-                className="w-full px-6 py-4 flex items-center justify-between hover:bg-green-100/50 transition"
+                className="w-full px-4 md:px-6 py-3 md:py-4 flex items-center justify-between hover:bg-green-100/50 transition-all duration-200"
               >
-                <div className="flex items-center gap-3">
-                  <span className="text-2xl text-green-700">{openExpanded ? '▼' : '▶'}</span>
-                  <h2 className="text-2xl font-bold text-green-700">🔓 Open for Predictions</h2>
-                  <span className="text-sm text-green-600 font-bold bg-green-200 px-3 py-1 rounded-full">
+                <div className="flex items-center gap-2 md:gap-3">
+                  <span className="text-lg md:text-2xl text-green-700">{openExpanded ? '▼' : '▶'}</span>
+                  <h2 className="text-base md:text-2xl font-bold text-green-700">Open for Predictions</h2>
+                  <span className="text-xs md:text-sm text-green-600 font-bold bg-green-200 px-2 md:px-3 py-1 rounded-full">
                     {openFixtures.length}
                   </span>
                 </div>
               </button>
               {openExpanded && (
-                <div className="px-6 pb-6">
-                  <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="px-3 md:px-6 pb-4 md:pb-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
                     {openFixtures.map((fixture) => (
                       <AdminFixtureCard
                         key={fixture.id}
@@ -320,20 +320,20 @@ export default function FixturesManagement() {
 
           {/* Locked Fixtures Accordion */}
           {lockedFixtures.length > 0 && (
-            <div className="bg-white rounded-lg shadow-md overflow-hidden border-2 border-gray-200">
+            <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200">
               <button
                 onClick={() => setLockedExpanded(!lockedExpanded)}
-                className="w-full px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition"
+                className="w-full px-4 md:px-6 py-3 md:py-4 flex items-center justify-between hover:bg-gray-50 transition-all duration-200"
               >
-                <div className="flex items-center gap-3">
-                  <span className="text-2xl">{lockedExpanded ? '▼' : '▶'}</span>
-                  <h2 className="text-xl font-bold text-gray-700">🔒 Upcoming Matches</h2>
-                  <span className="text-sm text-gray-500 font-semibold">({lockedFixtures.length})</span>
+                <div className="flex items-center gap-2 md:gap-3">
+                  <span className="text-lg md:text-2xl">{lockedExpanded ? '▼' : '▶'}</span>
+                  <h2 className="text-base md:text-xl font-bold text-gray-700">Upcoming Matches</h2>
+                  <span className="text-xs md:text-sm text-gray-500 font-semibold">({lockedFixtures.length})</span>
                 </div>
               </button>
               {lockedExpanded && (
-                <div className="px-6 pb-6">
-                  <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="px-3 md:px-6 pb-4 md:pb-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
                     {lockedFixtures.map((fixture) => (
                       <AdminFixtureCard
                         key={fixture.id}
@@ -754,17 +754,17 @@ function FixtureForm({
         </div>
       )}
 
-      <div className="flex gap-3 justify-end">
+      <div className="flex gap-2 md:gap-3 justify-end">
         <button
           type="button"
           onClick={onCancel}
-          className="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition font-semibold shadow-sm"
+          className="px-4 md:px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-all duration-200 font-semibold shadow transform hover:scale-105 active:scale-95 text-sm md:text-base"
         >
           Cancel
         </button>
         <button
           type="submit"
-          className="px-6 py-2 bg-blue-400 text-white rounded-lg hover:bg-blue-500 transition font-semibold shadow-sm"
+          className="px-4 md:px-6 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg hover:from-blue-600 hover:to-purple-700 transition-all duration-200 font-semibold shadow-lg transform hover:scale-105 active:scale-95 text-sm md:text-base"
         >
           {fixture ? 'Update Fixture' : 'Create Fixture'}
         </button>
